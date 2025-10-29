@@ -91,17 +91,26 @@ const transitionThoughts = {
 };
 
 const tools = [
-  { name: 'Jira', emoji: '📋' },
-  { name: 'Confluence', emoji: '📚' },
-  { name: 'Figma', emoji: '🎨' },
-  { name: 'Xcode', emoji: '💻' },
-  { name: 'Simulator', emoji: '📱' },
-  { name: 'Tests', emoji: '✅' },
-  { name: 'Git', emoji: '🔀' },
-  { name: 'GitHub', emoji: '🐙' },
-  { name: 'Slack', emoji: '💬' },
-  { name: 'AI', emoji: '🤖' }
+  { name: 'Jira', emoji: '📋', logo: '/logos/jira.png' },
+  { name: 'Confluence', emoji: '📚', logo: '/logos/confluence.png' },
+  { name: 'Figma', emoji: '🎨', logo: '/logos/figma.png' },
+  { name: 'Xcode', emoji: '💻', logo: '/logos/xcode.png' },
+  { name: 'Simulator', emoji: '📱', logo: '/logos/simulator.png' },
+  { name: 'Tests', emoji: '✅', logo: '/logos/tests.png' },
+  { name: 'Git', emoji: '🔀', logo: '/logos/git.png' },
+  { name: 'GitHub', emoji: '🐙', logo: '/logos/github.png' },
+  { name: 'Slack', emoji: '💬', logo: '/logos/slack.png' },
+  { name: 'AI', emoji: '🤖', logo: '/logos/claude.png' }
 ];
+
+// AI logos per level: Level 2 = ChatGPT, Level 3 = Copilot, Levels 4-5 = Claude
+const aiLogos = {
+  0: '/logos/claude.png',  // Level 1 - no AI used, but default to claude
+  1: '/logos/chatgpt.png', // Level 2 - Copy/Paste AI
+  2: '/logos/copilot.png', // Level 3 - Inefficient (WORST!)
+  3: '/logos/claude.png',  // Level 4 - Efficient AI
+  4: '/logos/claude.png'   // Level 5 - God Mode
+};
 
 const levels = [
   {
@@ -190,6 +199,15 @@ export default function WorkflowVisualization() {
   const currentWorkflow = levels[currentLevel].workflow;
   const currentTool = currentStep >= 0 ? currentWorkflow[currentStep] : null;
   const isComplete = currentStep >= currentWorkflow.length - 1 && !isPlaying;
+
+  // Get tool with level-specific AI logo
+  const getToolWithLevelLogo = (toolIndex) => {
+    const tool = tools[toolIndex];
+    if (tool.name === 'AI') {
+      return { ...tool, logo: aiLogos[currentLevel] };
+    }
+    return tool;
+  };
 
   // Block positions (x positions as percentages) - even spacing to avoid overlap
   const blockPositions = [8, 15, 22, 29, 36, 43, 50, 57, 64, 71];
@@ -392,12 +410,13 @@ export default function WorkflowVisualization() {
             {tools.map((tool, idx) => {
               const isActive = currentTool === idx;
               const wasHit = hitBlocks.has(idx);
-              
+              const toolWithLevelLogo = getToolWithLevelLogo(idx);
+
               return (
                 <div
                   key={idx}
                   className="absolute"
-                  style={{ 
+                  style={{
                     left: `${blockPositions[idx]}%`,
                     transform: 'translateX(-50%)'
                   }}
@@ -408,43 +427,50 @@ export default function WorkflowVisualization() {
                       🪙
                     </div>
                   )}
-                  
-                  {/* Brick block */}
+
+                  {/* Brick block or Logo */}
                   <div
                     className="relative"
-                    style={{ 
+                    style={{
                       width: '60px',
                       height: '60px',
-                      backgroundColor: wasHit ? '#a0522d' : '#d2691e',
-                      border: '3px solid',
-                      borderColor: '#8b4513',
-                      boxShadow: wasHit 
-                        ? 'inset -3px -3px 0 rgba(0,0,0,0.4), inset 3px 3px 0 rgba(255,255,255,0.1)'
+                      backgroundColor: wasHit ? 'transparent' : '#d2691e',
+                      border: wasHit ? 'none' : '3px solid',
+                      borderColor: wasHit ? 'transparent' : '#8b4513',
+                      boxShadow: wasHit
+                        ? 'none'
                         : '0 4px 0 #654321, inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.2)',
                       imageRendering: 'pixelated',
                       transform: isActive && isJumping ? 'translateY(-8px)' : 'translateY(0)',
                       transition: 'transform 150ms'
                     }}
                   >
-                    {/* Brick pattern */}
-                    <div className="absolute inset-0 grid grid-cols-2 gap-[2px] p-[2px]">
-                      <div className="border border-black/20" />
-                      <div className="border border-black/20" />
-                      <div className="border border-black/20" />
-                      <div className="border border-black/20" />
-                    </div>
-                    
+                    {/* Brick pattern - only show if not hit */}
+                    {!wasHit && (
+                      <div className="absolute inset-0 grid grid-cols-2 gap-[2px] p-[2px]">
+                        <div className="border border-black/20" />
+                        <div className="border border-black/20" />
+                        <div className="border border-black/20" />
+                        <div className="border border-black/20" />
+                      </div>
+                    )}
+
                     {/* Question mark if not hit */}
                     {!wasHit && (
                       <div className="absolute inset-0 flex items-center justify-center text-yellow-300 text-3xl font-bold" style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}>
                         ?
                       </div>
                     )}
-                    
-                    {/* Show emoji when hit */}
+
+                    {/* Show logo when hit - full size, no padding */}
                     {wasHit && (
-                      <div className="absolute inset-0 flex items-center justify-center text-3xl">
-                        {tool.emoji}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <img
+                          src={toolWithLevelLogo.logo}
+                          alt={toolWithLevelLogo.name}
+                          className="w-full h-full object-contain"
+                          style={{ filter: 'drop-shadow(2px 2px 3px rgba(0,0,0,0.4))' }}
+                        />
                       </div>
                     )}
                   </div>
@@ -547,13 +573,28 @@ export default function WorkflowVisualization() {
               <div className="flex items-center justify-center gap-3 mb-3">
                 {prevTool >= 0 && prevTool !== currentTool && (
                   <>
-                    <span className="text-3xl">{tools[prevTool]?.emoji}</span>
+                    <img
+                      src={getToolWithLevelLogo(prevTool)?.logo}
+                      alt={getToolWithLevelLogo(prevTool)?.name}
+                      className="w-10 h-10 object-contain"
+                      style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))' }}
+                    />
                     <span className="text-3xl">→</span>
-                    <span className="text-3xl">{tools[currentTool]?.emoji}</span>
+                    <img
+                      src={getToolWithLevelLogo(currentTool)?.logo}
+                      alt={getToolWithLevelLogo(currentTool)?.name}
+                      className="w-10 h-10 object-contain"
+                      style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))' }}
+                    />
                   </>
                 )}
                 {(prevTool === -1 || prevTool === currentTool) && (
-                  <span className="text-4xl">{tools[currentTool]?.emoji}</span>
+                  <img
+                    src={getToolWithLevelLogo(currentTool)?.logo}
+                    alt={getToolWithLevelLogo(currentTool)?.name}
+                    className="w-12 h-12 object-contain"
+                    style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))' }}
+                  />
                 )}
               </div>
               <p className="text-2xl font-bold" style={{ fontFamily: 'monospace' }}>
