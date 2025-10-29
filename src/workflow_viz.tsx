@@ -20,7 +20,6 @@ const transitionThoughts = {
   
   // Design comparison
   '4_2': "Wait, does this match the design? 🤔",
-  '2_3': "Gotta make it pixel perfect... 🔍",
   '2_4': "Let me test this design in the simulator 📱",
   
   // AI interactions - Copy/paste era
