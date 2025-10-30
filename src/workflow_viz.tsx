@@ -1,92 +1,113 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Contextual thoughts based on transitions (from → to)
 const transitionThoughts = {
   // Starting the workflow
-  '-1_0': "Alright, let's check this Jira ticket... 📋",
-  '0_1': "Better read the Confluence docs first 📚",
-  '1_2': "Now let's see what design wants... 🎨",
-  '2_3': "Time to code this beautiful design! 💻",
-  
+  '-1_0': "Alright, let's check this Jira ticket...",
+  '0_1': "Better read the Confluence docs first. Or not?",
+  '1_2': "Now let's see what design wants... hopefully it's clear.",
+  '2_3': "Time to code this beautiful design! Wish me luck.",
+
   // The dreaded iteration loop
-  '3_4': "Let's see if this actually works... 🤞",
-  '4_5': "Running tests before I get too excited... ✅",
-  '5_3': "Tests failed! Back to debugging... 🐛",
-  '4_3': "Simulator crashed. Classic. 💥",
-  '3_3': "Still coding... still coding... 😮‍💨",
-  '4_4': "Why is the simulator so slow? 🐌",
-  '5_5': "Re-running tests... again... 🔄",
-  
+  '3_4': "Let's see if this actually works... fingers crossed.",
+  '4_5': "Running tests before I get too excited... again.",
+  '5_3': "Tests failed! Back to debugging... this is getting old.",
+  '4_3': "Simulator crashed. Classic. Why always me?",
+  '3_3': "Still coding... still coding... is this even progress?",
+  '4_4': "Why is the simulator so slow? My patience is wearing thin.",
+  '5_5': "Re-running tests... again... and again. This is fine.",
+
   // Design comparison
-  '4_2': "Wait, does this match the design? 🤔",
-  '2_4': "Let me test this design in the simulator 📱",
-  
-  // AI interactions - Copy/paste era
-  '3_9': "Let me ask AI for help... 🤖",
-  '9_3': "Copy, paste, pray it works 🙏",
-  '4_9': "AI, why isn't this working? 😭",
-  '9_4': "Let's test what AI gave me... 🎲",
-  '5_9': "Tests failed, asking AI for fix... 🆘",
-  '9_5': "Running tests on AI's code... 🤞",
-  '2_9': "Maybe AI knows about this design pattern? 💡",
-  '9_2': "AI says check the Figma file again 🎨",
-  
+  '4_2': "Wait, does this match the design? Let me double check.",
+  '2_4': "Let me test this design in the simulator. Hope it looks good.",
+
+  // AI interactions - Copy/Pasta era
+  '3_9': "Let me ask AI for help... maybe it knows.",
+  '9_3': "Copy, paste, pray it works. The usual.",
+  '4_9': "AI, why isn't this working? Are you even trying?",
+  '9_4': "Let's test what AI gave me... probably needs tweaking.",
+  '5_9': "Tests failed, asking AI for fix... again. This is frustrating.",
+  '9_5': "Running tests on AI's code... please be right this time.",
+  '2_9': "Maybe AI knows about this design pattern? Worth a shot.",
+  '9_2': "AI says check the Figma file again. Seriously?",
+
   // Wrapping up
-  '3_6': "Time to commit this masterpiece! 💾",
-  '5_6': "All green! Committing before it breaks! 🏃‍♂️",
-  '6_7': "Pushing to GitHub... 🚀",
-  '7_8': "Let me tell the team I'm a hero! 😎",
-  '8_8': "Everyone's congratulating me! 🎉",
-  
+  '3_6': "Time to commit this masterpiece! Finally.",
+  '5_6': "All green! Committing before it breaks! Phew.",
+  '6_7': "Pushing to GitHub... hope the CI passes.",
+  '7_8': "Let me tell the team I'm a hero! They'll never know the struggle.",
+  '8_8': "Everyone's congratulating me! I deserve this.",
+
   // PR flow
-  '7_3': "Handling PR comments... again 😤",
-  '7_2': "Reviewer wants design changes 🙄",
-  '8_3': "Team found a bug in Slack 🐛",
-  
+  '7_3': "Handling PR comments... again. Can't they just approve?",
+  '7_2': "Reviewer wants design changes. Back to Figma.",
+  '8_3': "Team found a bug in Slack. My 'masterpiece' has a flaw.",
+
   // Documentation checks
-  '3_1': "Wait, how does this work again? 📖",
-  '1_3': "Okay NOW I can code it properly! 💡",
-  '0_3': "Skipping docs, I got this! 😎",
-  
+  '3_1': "Wait, how does this work again? I should have read the docs.",
+  '1_3': "Okay NOW I can code it properly! Hopefully.",
+  '0_3': "Skipping docs, I got this! (Narrator: He did not got this.)",
+
   // Level-specific variations
-  level_0: {
-    '3_4': "Manual testing... for the 47th time 😩",
-    '4_5': "Please pass, please pass... 🙏",
-    '5_3': "Another failure. Why did I become a dev? 💀",
-    '4_3': "Back to Xcode... AGAIN 🔄",
-    '3_5': "Writing tests manually like a caveman 🦴",
+  level_0: { // NO AI
+    '-1_0': "Another day, another Jira ticket. Manual labor, here I come.",
+    '3_4': "Manual testing... for the 47th time. My eyes hurt.",
+    '4_5': "Please pass, please pass... I can't take another failure.",
+    '5_3': "Another failure. Why did I become a dev? This is soul-crushing.",
+    '4_3': "Back to Xcode... AGAIN. This loop is endless.",
+    '3_5': "Writing tests manually like a caveman. There has to be a better way.",
+    '0_1': "Confluence docs are always outdated. Guess I'll just wing it.",
+    '1_2': "Design specs are vague. Time to guess what they want.",
+    '3_6': "Finally done coding this. My fingers are tired.",
+    '5_6': "All tests passed! A miracle! Committing before I jinx it.",
+    '7_3': "PR comments are piling up. This is going to be a long day.",
   },
-  level_1: {
-    '3_4': "Testing without AI help... 😓",
-    '4_3': "Still doing everything myself 💪",
+  level_1: { // COPY/PASTA AI
+    '-1_0': "Jira ticket. Time to find some code snippets online.",
+    '3_9': "Let me copy some code from AI... hope it's relevant.",
+    '9_3': "Pasting AI's code... fingers crossed. It's a gamble.",
+    '9_9': "What should I ask next? AI, give me more options!",
+    '4_9': "AI, why isn't this working? Your code is supposed to be smart!",
+    '9_4': "Let's test what AI gave me... probably still broken.",
+    '5_9': "Tests failed, asking AI for fix... this is getting repetitive.",
+    '9_5': "Running tests on AI's code... again. Is this progress?",
+    '3_3': "Still trying to make AI's code work. My brain hurts.",
+    '7_3': "PR comments on AI's code. Explaining AI's logic is hard.",
   },
-  level_2: {
-    '3_9': "Let me copy some code from AI... 📋",
-    '9_3': "Pasting AI's code... fingers crossed 🤞",
-    '9_9': "What should I ask next? 🤷",
+  level_2: { // AGENTIC LVL 1
+    '-1_0': "Jira ticket. Time to delegate to my AGENTIC LVL 1.",
+    '3_9': "AI, fix this one tiny thing! Don't mess it up.",
+    '9_3': "That didn't work. Let me try again... with more specific instructions.",
+    '9_9': "Should I ask AI again? Yes. Yes I should. But with more context.",
+    '3_3': "Wait, what was I doing? AI, remind me of the task.",
+    '9_4': "Did AI's change work? Probably not... but let's check.",
+    '4_9': "AI, this is still broken. What's going on?",
+    '5_9': "Tests failed. AI, analyze the failure and suggest a fix.",
+    '9_5': "Running AI's suggested fix. Hope it's better this time.",
+    '7_3': "PR comments. AI, help me address these efficiently.",
   },
-  level_3: {
-    '3_9': "AI, fix this one tiny thing! 🔨",
-    '9_3': "That didn't work. Let me try again... 🤦",
-    '9_9': "Should I ask AI again? Yes. Yes I should. 🔄",
-    '3_3': "Wait, what was I doing? 😵‍💫",
-    '9_4': "Did AI's change work? Probably not... 😬",
+  level_3: { // AGENTIC LVL 2
+    '-1_0': "Jira ticket. My AGENTIC LVL 2 will handle this.",
+    '2_9': "Giving AI all the context it needs... it should get this.",
+    '1_9': "AI, here's the full context from docs. Don't miss anything.",
+    '9_9': "AI is cooking with full context! This should be good.",
+    '9_3': "AI nailed it! Just reviewing the code... impressive.",
+    '9_4': "Let's verify AI's work in simulator. Looking promising.",
+    '3_4': "AI wrote solid code, testing now. Smooth sailing.",
+    '5_9': "Tests failed. AI, self-correct and re-run.",
+    '9_5': "AI self-corrected and tests passed! Amazing.",
+    '7_3': "PR comments are minimal. AI, generate responses.",
   },
-  level_4: {
-    '2_9': "Giving AI all the context it needs... 📝",
-    '1_9': "AI, here's the full context from docs 📚",
-    '9_9': "AI is cooking with full context! 👨‍🍳",
-    '9_3': "AI nailed it! Just reviewing the code... 👀",
-    '9_4': "Let's verify AI's work in simulator 🔍",
-    '3_4': "AI wrote solid code, testing now ✨",
-  },
-  level_5: {
-    '0_9': "AI, read the ticket and handle everything 🎩",
-    '9_9': "AI is handling it all. Time for coffee ☕",
-    '9_7': "AI finished! Just need to review the PR... 🧐",
-    '7_8': "AI did 95% of the work. I'm just the messenger! 📨",
-    '9_3': "AI already wrote the code. Just checking... 👌",
+  level_4: { // ENDGAME
+    '-1_0': "Jira ticket. AI, read the ticket and handle everything. I'm on break.",
+    '0_9': "AI, read the ticket and handle everything. I'm just supervising.",
+    '9_9': "AI is handling it all. Time for coffee and memes.",
+    '9_7': "AI finished! Just need to review the PR... almost hands-off.",
+    '7_8': "AI did 95% of the work. I'm just the messenger! And the approver.",
+    '9_3': "AI already wrote the code. Just checking... perfect as always.",
+    '3_4': "AI handled the coding and testing. My job is easy now.",
+    '5_6': "AI passed all tests and committed. What a time to be alive.",
+    '7_8': "AI pushed to GitHub and notified the team. I'm a genius for hiring AI.",
   }
 };
 
@@ -106,40 +127,40 @@ const tools = [
 // AI logos per level: Level 2 = ChatGPT, Level 3 = Copilot, Levels 4-5 = Claude
 const aiLogos = {
   0: '/logos/claude.png',  // Level 1 - no AI used, but default to claude
-  1: '/logos/chatgpt.png', // Level 2 - Copy/Paste AI
-  2: '/logos/copilot.png', // Level 3 - Inefficient (WORST!)
-  3: '/logos/claude.png',  // Level 4 - Efficient AI
-  4: '/logos/claude.png'   // Level 5 - God Mode
+  1: '/logos/chatgpt.png', // Level 2 - Copy/Pasta AI
+  2: '/logos/copilot.png', // Level 3 - AGENTIC LVL 1
+  3: '/logos/claude.png',  // Level 4 - AGENTIC LVL 2
+  4: '/logos/claude.png'   // Level 5 - ENDGAME
 };
 
 const levels = [
   {
-    name: "LEVEL 1: NO AI",
+    name: "NO AI",
     workflow: [0, 1, 2, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 6, 7, 8],
     duration: 400,
-    description: "8-10 ITERATION CYCLES"
+
   },
   {
-    name: "LEVEL 2: COPY/PASTE AI",
+    name: "COPY/PASTA AI",
     workflow: [0, 1, 2, 3, 9, 3, 4, 5, 3, 9, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 6, 7, 8],
     duration: 350,
     description: "6-7 CYCLES"
   },
   {
-    name: "LEVEL 3: INEFFICIENT (WORST!)",
+    name: "AGENTIC LVL 1",
     workflow: [0, 1, 2, 9, 3, 9, 3, 9, 4, 9, 3, 5, 9, 3, 9, 4, 5, 9, 3, 4, 5, 6, 7, 8],
     duration: 350,
     description: "TOO MUCH SWITCHING"
   },
   {
-    name: "LEVEL 4: EFFICIENT AI",
-    workflow: [0, 1, 2, 9, 9, 9, 3, 4, 5, 3, 4, 5, 6, 7, 8],
-    duration: 400,
+    name: "AGENTIC LVL 2",
+    workflow: [1, 9, 3, 4, 9, 3, 4, 9, 6, 7, 8],
+    duration: 455,
     description: "2-3 CYCLES"
   },
   {
-    name: "LEVEL 5: GOD MODE",
-    workflow: [0, 9, 9, 9, 9, 7, 8],
+    name: "ENDGAME",
+    workflow: [0, 9, 7, 8],
     duration: 500,
     description: "AI DOES EVERYTHING"
   }
@@ -147,44 +168,66 @@ const levels = [
 
 const slides = [
   {
-    title: "You're Asking for a Faster Horse",
-    items: ["Optimizing old workflow", "Not fundamentally changing", "Be the 'Jake' of workflow", "Most work = mapping states"]
+    title: "Usecases (beyond implementing a feature)",
+    items: [
+      "Use AI to learn (Learn backend, or... science forbid... Android)",
+      "Use AI to find organizational knowledge (Search unfamiliar codebases, Confluence, Slack, Snowflake)",
+      "Use AI to improve AI",
+      "Make cool presentations",
+      "Debugging"
+    ],
+    subitems: {
+      2: ["Fix your own setup issues (installing MCPs, weird Node errors, etc.)", "Dump session learnings into your personal instruction file", "Build complex commands"],
+      4: ["Comb through logs, events, and data tables"]
+    }
   },
   {
-    title: "Mistake #1: Tools, Not Context",
-    items: ["Switching models constantly", "No personal instructions", "No project .md files", "Context > prompts"]
+    title: "Things You Should Know",
+    items: [
+      "It won't make you implement things faster *in abstract*. It frees you to do important work while *it* handles the slow parts.",
+      "Context Engineering: \"Prompt Engineering is giving the AI a task. Context Engineering is giving the AI an office to work in.\"",
+      "Context window limitations",
+      "Wise tooling (and its limitations/restrictions)"
+    ]
   },
   {
-    title: "Mistake #2: Not Using Claude Code",
-    items: ["Terminal already open", "Bash access", "Parallelization", "Planning mode", "Subagents"]
+    title: "Things You Should Try",
+    items: [
+      "Documentation first",
+      "Stop re-prompting. Ask: \"How can I avoid this forever?\"",
+      "Build a beefy personal instructions file",
+      "Use CLI-based agents (Claude Code, Gemini CLI, etc.)",
+      "Use MCPs and CLIs",
+      "Use 'plan mode'",
+      "Use subagents",
+      "Create custom commands",
+      "Embrace parallelization",
+      "--dangerously-skip-permissions"
+    ]
   },
   {
-    title: "Mistake #3: No Feedback Loop",
-    items: ["Generative: You test", "Agentic: AI tests", "Stop being the loop"]
-  },
-  {
-    title: "Mistake #4: Copy/Paste",
-    items: ["Stop: Copy → Paste", "Use: MCPs", "Confluence, Jira, Figma", "GitHub CLI, Simulator"]
-  },
-  {
-    title: "Mistake #5: Jump to Code",
-    items: ["Wrong: Build X → broken", "Right: Plan first", "Use AI to learn"]
-  },
-  {
-    title: "Things YOU Try",
-    items: ["Personal instructions", "Set up MCPs", "Claude Code", "Planning mode", "Ask: 'Avoid forever?'"]
-  },
-  {
-    title: "Things GUILD Tries",
-    items: ["Documentation (.md)", "Build/test guides", "Design system docs", "Use AI as tooling"]
-  },
-  {
-    title: "Start Today",
-    items: ["Create .claud file", "Pick ONE repeated problem", "Think: solve forever?", "Share wins"]
+    title: "How the Guild Can Help",
+    items: [
+      "Create more .md files",
+      "Push for modularization and feature apps",
+      "Use AI to create tooling",
+      "Use AI *as* tooling (for deprecations, migrations, env setup, UI tests)"
+    ],
+    subitems: {
+      0: [
+        "How to use the design system",
+        "How to compile and run tests (and avoid timeouts)",
+        "What our frameworks do",
+        "How to write tests",
+        "How to read awkward code (macros, Prism, etc.)",
+        "A Guild Swift style guide"
+      ]
+    }
   }
 ];
 
 export default function WorkflowVisualization() {
+  const [showIntro, setShowIntro] = useState(true);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [currentStep, setCurrentStep] = useState(-1); // Start at -1 so Mario begins off-screen
   const [isPlaying, setIsPlaying] = useState(false);
@@ -195,6 +238,8 @@ export default function WorkflowVisualization() {
   const [isClimbingFlag, setIsClimbingFlag] = useState(false);
   const [flagProgress, setFlagProgress] = useState(0);
   const [hitBlocks, setHitBlocks] = useState(new Set());
+  const [activeMushrooms, setActiveMushrooms] = useState([]);
+  const [isMarioChilling, setIsMarioChilling] = useState(false);
 
   const currentWorkflow = levels[currentLevel].workflow;
   const currentTool = currentStep >= 0 ? currentWorkflow[currentStep] : null;
@@ -217,14 +262,117 @@ export default function WorkflowVisualization() {
       const timer = setTimeout(() => {
         if (currentStep < currentWorkflow.length - 1) {
           setIsJumping(true);
-          setCurrentStep(currentStep + 1);
+          const nextStep = currentStep + 1;
+          const nextTool = currentWorkflow[nextStep];
+
+          setCurrentStep(nextStep);
           setCoins(coins + 10);
           if (currentStep >= 0) {
             setHitBlocks(new Set([...hitBlocks, currentTool]));
           }
+
+          // Level 5: Switch Mario to chill mode after touching AI
+          if (currentLevel === 4 && nextTool === 9) {
+            setIsMarioChilling(true);
+          }
+
+          // Spawn mushrooms for agentic levels (3, 4, 5)
+          if (currentLevel >= 2 && currentTool === 9 && nextTool !== 9) {
+            // Level 3 (index 2): Spawn mushroom from AI to current target
+            // Level 4 (index 3): Spawn mushroom from AI to specific targets (Simulator, Tests, Git)
+            // Level 5 (index 4): Spawn 3 mushrooms to simulate parallel tasks - multiple cycles
+            const newMushrooms = [];
+
+            // Weighted random selection helper function
+            // For level 5, heavily favor Xcode (3) and Simulator (4)
+            const getWeightedRandomTarget = (availableServices, currentLevel) => {
+              // For level 5 (index 4), use weighted selection
+              if (currentLevel >= 4) {
+                // Create weighted array where Xcode and Simulator appear more frequently
+                const weighted = [];
+                availableServices.forEach(service => {
+                  // Xcode (3) and Simulator (4) get 5x weight, others get 1x weight
+                  const weight = (service === 3 || service === 4) ? 5 : 1;
+                  for (let i = 0; i < weight; i++) {
+                    weighted.push(service);
+                  }
+                });
+                return weighted[Math.floor(Math.random() * weighted.length)];
+              } else {
+                // Other levels use unweighted random selection
+                return availableServices[Math.floor(Math.random() * availableServices.length)];
+              }
+            };
+
+            if (currentLevel === 4) {
+              // Level 5: Spawn 3 mushrooms that visit ALL services randomly
+              const allServices = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // Jira, Confluence, Figma, Xcode, Simulator, Tests, Git, GitHub, Slack
+
+              for (let i = 0; i < 3; i++) {
+                const mushroomId = Date.now() + i;
+                // Pick a weighted random initial target (favor Xcode and Simulator)
+                const initialTarget = getWeightedRandomTarget(allServices, currentLevel);
+
+                newMushrooms.push({
+                  id: mushroomId,
+                  fromTool: 9, // AI
+                  toTool: initialTarget,
+                  progress: 0,
+                  returning: false,
+                  cycleCount: 0,
+                  maxCycles: 1, // Only 1 cycle per target (no repeat visits)
+                  visitedServices: new Set(), // Track visited services
+                  totalServices: allServices.length
+                });
+              }
+            } else if (currentLevel === 3) {
+              // Level 4: Multiple mushrooms with different sequences showing parallel work
+              // Mario touches AI 3 times, spawning different tasks each time
+              const mushroomSequences = [
+                [1, 0, 2], // First touch: Confluence → Jira → Figma (gather requirements)
+                [5, 3, 4], // Second touch: Tests → Xcode → Simulator (run tests and verify)
+                [6, 7]     // Third touch: Git → GitHub (commit and push)
+              ];
+
+              // Determine which sequence based on how many times AI has been touched
+              const aiTouchCount = currentWorkflow.slice(0, nextStep).filter(tool => tool === 9).length;
+              const sequenceIndex = aiTouchCount - 1; // 0-indexed
+
+              if (sequenceIndex >= 0 && sequenceIndex < mushroomSequences.length) {
+                const targetSequence = mushroomSequences[sequenceIndex];
+                const mushroomId = Date.now();
+
+                newMushrooms.push({
+                  id: mushroomId,
+                  fromTool: 9, // AI
+                  toTool: targetSequence[0],
+                  progress: 0,
+                  returning: false,
+                  cycleCount: 0,
+                  targetSequence: targetSequence,
+                  currentTargetIndex: 0
+                });
+              }
+            } else {
+              // Level 3: Single mushroom to current target
+              const mushroomId = Date.now();
+              newMushrooms.push({
+                id: mushroomId,
+                fromTool: 9, // AI
+                toTool: nextTool,
+                progress: 0,
+                returning: false,
+                cycleCount: 0,
+                maxCycles: 1
+              });
+            }
+
+            setActiveMushrooms([...activeMushrooms, ...newMushrooms]);
+          }
         } else {
           setIsPlaying(false);
           setIsClimbingFlag(true);
+          setActiveMushrooms([]); // Clear all mushrooms when Mario reaches the flag
           if (currentTool !== null) {
             setHitBlocks(new Set([...hitBlocks, currentTool]));
           }
@@ -232,7 +380,7 @@ export default function WorkflowVisualization() {
       }, levels[currentLevel].duration);
       return () => clearTimeout(timer);
     }
-  }, [currentStep, isPlaying, currentWorkflow, currentLevel, showSlides, coins, currentTool, hitBlocks]);
+  }, [currentStep, isPlaying, currentWorkflow, currentLevel, showSlides, coins, currentTool, hitBlocks, activeMushrooms]);
 
   // Separate effect to reset jump
   useEffect(() => {
@@ -253,9 +401,132 @@ export default function WorkflowVisualization() {
     }
   }, [isClimbingFlag, flagProgress]);
 
+  // Weighted random selection helper function (for use in effects)
+  const getWeightedRandomTarget = (availableServices, level) => {
+    // For levels 4 and 5 (indices 3 and 4), use weighted selection
+    if (level >= 3) {
+      // Create weighted array where Xcode and Simulator appear more frequently
+      const weighted = [];
+      availableServices.forEach(service => {
+        // Xcode (3) and Simulator (4) get 5x weight, others get 1x weight
+        const weight = (service === 3 || service === 4) ? 5 : 1;
+        for (let i = 0; i < weight; i++) {
+          weighted.push(service);
+        }
+      });
+      return weighted[Math.floor(Math.random() * weighted.length)];
+    } else {
+      // Level 3 uses unweighted random selection
+      return availableServices[Math.floor(Math.random() * availableServices.length)];
+    }
+  };
+
+  // Animate mushrooms
+  useEffect(() => {
+    if (activeMushrooms.length === 0) return;
+
+    const timer = setInterval(() => {
+      setActiveMushrooms(prevMushrooms => {
+        const updated = [];
+        const toReveal = [];
+
+        prevMushrooms.forEach(mushroom => {
+          let newMushroom = { ...mushroom };
+
+          if (mushroom.returning) {
+            // Returning to AI
+            newMushroom.progress = mushroom.progress + 2;
+            if (newMushroom.progress >= 100) {
+              // Reached AI
+              if (mushroom.visitedServices !== undefined) {
+                // Level 5: Pick a weighted random unvisited target (favor Xcode and Simulator)
+                const allServices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+                const unvisited = allServices.filter(s => !mushroom.visitedServices.has(s));
+
+                if (unvisited.length > 0) {
+                  // Pick weighted random unvisited service
+                  const randomTarget = getWeightedRandomTarget(unvisited, currentLevel);
+                  newMushroom.toTool = randomTarget;
+                  newMushroom.progress = 0;
+                  newMushroom.returning = false;
+                  newMushroom.cycleCount = 0;
+                  updated.push(newMushroom);
+                }
+                // Otherwise mushroom disappears (visited all targets)
+              } else if (mushroom.targetSequence !== undefined) {
+                // Level 4: Move to next target in sequence
+                const nextIndex = mushroom.currentTargetIndex + 1;
+                if (nextIndex < mushroom.targetSequence.length) {
+                  newMushroom.currentTargetIndex = nextIndex;
+                  newMushroom.toTool = mushroom.targetSequence[nextIndex];
+                  newMushroom.progress = 0;
+                  newMushroom.returning = false;
+                  updated.push(newMushroom);
+                }
+                // Otherwise mushroom disappears (completed all targets in sequence)
+              } else {
+                // Level 3: Check if we need to do another cycle
+                newMushroom.cycleCount = mushroom.cycleCount + 1;
+                if (newMushroom.cycleCount < mushroom.maxCycles) {
+                  // Start another cycle: go back to target
+                  newMushroom.progress = 0;
+                  newMushroom.returning = false;
+                  updated.push(newMushroom);
+                }
+                // Otherwise mushroom disappears (completed all cycles)
+              }
+            } else {
+              updated.push(newMushroom);
+            }
+          } else {
+            // Going to target
+            newMushroom.progress = mushroom.progress + 2;
+            if (newMushroom.progress >= 100) {
+              // Reached target
+              toReveal.push(mushroom.toTool);
+
+              // Mark service as visited for Level 5
+              if (mushroom.visitedServices !== undefined) {
+                newMushroom.visitedServices = new Set([...mushroom.visitedServices, mushroom.toTool]);
+              }
+
+              // For levels 4 and 5, mushrooms return to AI
+              if (currentLevel >= 3) {
+                newMushroom.progress = 0;
+                newMushroom.returning = true;
+                updated.push(newMushroom);
+              }
+              // For level 3, mushrooms disappear
+            } else {
+              updated.push(newMushroom);
+            }
+          }
+        });
+
+        // Reveal target blocks
+        if (toReveal.length > 0) {
+          setHitBlocks(prev => {
+            const newSet = new Set(prev);
+            toReveal.forEach(tool => newSet.add(tool));
+            return newSet;
+          });
+        }
+
+        return updated;
+      });
+    }, 30);
+
+    return () => clearInterval(timer);
+  }, [activeMushrooms, currentLevel]);
+
   useEffect(() => {
     const handleKeyPress = (e) => {
-      if (showSlides) {
+      if (showIntro) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setShowIntro(false);
+        }
+      } else if (showSlides) {
         if (e.key === 'ArrowLeft' && currentSlide > 0) {
           setCurrentSlide(currentSlide - 1);
         } else if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
@@ -272,6 +543,8 @@ export default function WorkflowVisualization() {
           setIsClimbingFlag(false);
           setFlagProgress(0);
           setHitBlocks(new Set());
+          setActiveMushrooms([]);
+          setIsMarioChilling(false);
         } else if (e.key === 'ArrowRight' && currentLevel < levels.length - 1) {
           setCurrentLevel(currentLevel + 1);
           setCurrentStep(-1);
@@ -280,6 +553,8 @@ export default function WorkflowVisualization() {
           setIsClimbingFlag(false);
           setFlagProgress(0);
           setHitBlocks(new Set());
+          setActiveMushrooms([]);
+          setIsMarioChilling(false);
         } else if (e.key === ' ') {
           e.preventDefault();
           if (!isComplete) {
@@ -290,6 +565,8 @@ export default function WorkflowVisualization() {
             setIsClimbingFlag(false);
             setFlagProgress(0);
             setHitBlocks(new Set());
+            setActiveMushrooms([]);
+            setIsMarioChilling(false);
           }
         } else if (e.key === 'Enter') {
           setShowSlides(true);
@@ -300,26 +577,203 @@ export default function WorkflowVisualization() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentLevel, isPlaying, currentSlide, showSlides, isComplete]);
+  }, [currentLevel, isPlaying, currentSlide, showSlides, showIntro, isComplete]);
+
+  // Intro screen
+  if (showIntro) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center relative overflow-hidden" style={{
+        imageRendering: 'pixelated',
+        backgroundColor: '#5C94FC'
+      }}>
+        {/* Mario-style title card */}
+        <div className="text-center">
+          {/* Title banner */}
+          <div className="relative inline-block mb-16">
+            <div className="px-16 py-12 border-8 border-black" style={{
+              backgroundColor: '#DC5148',
+              boxShadow: '0 0 0 4px white, 0 0 0 8px black'
+            }}>
+              <h1 className="text-7xl font-bold tracking-wider mb-4" style={{
+                fontFamily: 'monospace',
+                color: 'white',
+                textShadow: '4px 4px 0 #000',
+                letterSpacing: '0.05em'
+              }}>
+                YOU'RE USING
+              </h1>
+              <h1 className="text-8xl font-bold tracking-wider" style={{
+                fontFamily: 'monospace',
+                color: '#FFE69C',
+                textShadow: '4px 4px 0 #000',
+                letterSpacing: '0.05em'
+              }}>
+                AI WRONG
+              </h1>
+            </div>
+            {/* Corner screws */}
+            <div className="absolute top-2 left-2 w-4 h-4 rounded-full" style={{ backgroundColor: '#4A4A4A', border: '2px solid #2A2A2A' }}></div>
+            <div className="absolute top-2 right-2 w-4 h-4 rounded-full" style={{ backgroundColor: '#4A4A4A', border: '2px solid #2A2A2A' }}></div>
+            <div className="absolute bottom-2 left-2 w-4 h-4 rounded-full" style={{ backgroundColor: '#4A4A4A', border: '2px solid #2A2A2A' }}></div>
+            <div className="absolute bottom-2 right-2 w-4 h-4 rounded-full" style={{ backgroundColor: '#4A4A4A', border: '2px solid #2A2A2A' }}></div>
+          </div>
+
+          {/* Copyright style text */}
+          <p className="text-2xl mb-12" style={{
+            fontFamily: 'monospace',
+            color: '#7EC0EE',
+            textShadow: '2px 2px 0 #000'
+          }}>
+            ©2025 AHMED SHAALAN
+          </p>
+
+          {/* Menu options */}
+          <div className="space-y-4 mb-16">
+            <div className="flex items-center justify-center gap-4">
+              <img
+                src="/assets/mario.png"
+                alt="Mario"
+                className="w-12 h-12"
+                style={{ imageRendering: 'pixelated' }}
+              />
+              <p className="text-4xl font-bold" style={{
+                fontFamily: 'monospace',
+                color: 'white',
+                textShadow: '3px 3px 0 #000'
+              }}>
+                PRESS START
+              </p>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <p className="text-xl" style={{
+            fontFamily: 'monospace',
+            color: 'white',
+            textShadow: '2px 2px 0 #000'
+          }}>
+            PRESS SPACE OR ENTER
+          </p>
+        </div>
+
+        {/* Hills decoration */}
+        <div className="absolute bottom-8 left-10">
+          <div className="w-48 h-32 rounded-t-full" style={{ backgroundColor: '#00B800', border: '4px solid #008800' }}></div>
+        </div>
+        <div className="absolute bottom-8 right-20">
+          <div className="w-32 h-24 rounded-t-full" style={{ backgroundColor: '#00B800', border: '4px solid #008800' }}></div>
+        </div>
+
+        {/* Ground decoration - pushed to very bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 flex" style={{ backgroundColor: '#000' }}>
+          {[...Array(Math.ceil(window.innerWidth / 32))].map((_, i) => (
+            <img
+              key={i}
+              src="/assets/groundbrick.png"
+              alt="Ground"
+              className="w-8 h-8 flex-shrink-0"
+              style={{ imageRendering: 'pixelated' }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (showSlides) {
+    const currentSlideData = slides[currentSlide];
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 text-white p-8 flex flex-col items-center justify-center">
-        <div className="max-w-4xl w-full">
-          <h1 className="text-6xl font-bold mb-12 text-center" style={{ fontFamily: 'monospace', textShadow: '4px 4px 0 #000' }}>
-            {slides[currentSlide].title}
-          </h1>
-          <ul className="space-y-6 text-3xl" style={{ fontFamily: 'monospace' }}>
-            {slides[currentSlide].items.map((item, idx) => (
-              <li key={idx} className="flex items-start">
-                <span className="mr-4">★</span>
-                <span>{item}</span>
-              </li>
+      <div className="min-h-screen text-white p-8 flex flex-col items-center justify-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #163300 0%, #2F5711 50%, #9FE870 100%)' }}>
+        {/* Animated background elements - Wise secondary colors */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-32 h-32 rounded-full blur-3xl animate-pulse" style={{ background: '#FFEB69' }}></div>
+          <div className="absolute bottom-20 right-20 w-40 h-40 rounded-full blur-3xl animate-pulse" style={{ background: '#FFC091', animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 w-48 h-48 rounded-full blur-3xl animate-pulse" style={{ background: '#A0E1E1', animationDelay: '2s' }}></div>
+        </div>
+
+        <div className="max-w-5xl w-full relative z-10">
+          {/* Title with enhanced styling */}
+          <div className="mb-16">
+            <h1
+              className="text-6xl font-bold text-center leading-tight"
+              style={{
+                fontFamily: 'monospace',
+                textShadow: '4px 4px 0 #163300, 2px 2px 20px rgba(159, 232, 112, 0.4)',
+                letterSpacing: '-0.02em',
+                color: '#FFFFFF'
+              }}
+            >
+              {currentSlideData.title}
+            </h1>
+            <div className="h-2 mt-6 rounded-full" style={{ background: 'linear-gradient(90deg, transparent 0%, #9FE870 50%, transparent 100%)' }}></div>
+          </div>
+
+          {/* Content with nested structure */}
+          <div className="space-y-5" style={{ fontFamily: 'monospace' }}>
+            {currentSlideData.items.map((item, idx) => (
+              <div key={idx} className="group">
+                {/* Main item */}
+                <div className="flex items-start backdrop-blur-sm rounded-xl p-5 border-2 transition-all duration-300" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  borderColor: 'rgba(159, 232, 112, 0.2)'
+                }}>
+                  <span className="text-4xl mr-5 group-hover:scale-125 transition-transform duration-300" style={{ color: '#9FE870' }}>★</span>
+                  <span className="text-2xl flex-1 leading-relaxed">{item}</span>
+                </div>
+
+                {/* Subitems if they exist */}
+                {currentSlideData.subitems?.[idx] && (
+                  <div className="ml-16 mt-3 space-y-3">
+                    {currentSlideData.subitems[idx].map((subitem, subidx) => (
+                      <div
+                        key={subidx}
+                        className="flex items-start rounded-lg p-4 border-l-4 transition-all duration-300"
+                        style={{
+                          background: 'linear-gradient(90deg, rgba(255, 192, 145, 0.15) 0%, transparent 100%)',
+                          borderColor: '#FFC091'
+                        }}
+                      >
+                        <span className="text-2xl mr-4" style={{ color: '#FFEB69' }}>▸</span>
+                        <span className="text-xl leading-relaxed" style={{ color: '#E8F5E3' }}>{subitem}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
-          <div className="mt-12 text-center text-xl text-gray-300" style={{ fontFamily: 'monospace' }}>
-            <p>SLIDE {currentSlide + 1} OF {slides.length}</p>
-            <p className="mt-2">← → NAVIGATE • ESC FOR GAME</p>
+          </div>
+
+          {/* Navigation footer */}
+          <div className="mt-16 pt-8 border-t-2" style={{ borderColor: 'rgba(159, 232, 112, 0.3)' }}>
+            <div className="flex justify-between items-center">
+              <div className="text-2xl font-bold" style={{ fontFamily: 'monospace', color: '#9FE870' }}>
+                SLIDE {currentSlide + 1} / {slides.length}
+              </div>
+              <div className="flex gap-8 text-xl" style={{ fontFamily: 'monospace' }}>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg border" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: 'rgba(159, 232, 112, 0.3)'
+                }}>
+                  <span className="text-2xl">←</span>
+                  <span>PREV</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg border" style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderColor: 'rgba(159, 232, 112, 0.3)'
+                }}>
+                  <span>NEXT</span>
+                  <span className="text-2xl">→</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg border" style={{
+                  backgroundColor: 'rgba(168, 32, 13, 0.2)',
+                  borderColor: 'rgba(168, 32, 13, 0.5)'
+                }}>
+                  <span>ESC</span>
+                  <span className="text-sm">GAME</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -356,16 +810,6 @@ export default function WorkflowVisualization() {
 
   return (
     <div className="h-screen bg-gradient-to-b from-blue-400 via-blue-300 to-blue-500 p-4 overflow-hidden relative" style={{ imageRendering: 'pixelated' }}>
-      {/* Background hills */}
-      <div className="absolute bottom-20 left-10 pointer-events-none">
-        <img
-          src="/assets/hills.png"
-          alt="Hills"
-          className="w-48 h-auto"
-          style={{ imageRendering: 'pixelated', opacity: 0.7 }}
-        />
-      </div>
-
       <div className="max-w-5xl mx-auto relative z-10">
         {/* Combined HUD and Controls */}
         <div className="mb-4 bg-black text-white p-3 rounded-lg border-4 border-white shadow-2xl" style={{ fontFamily: 'monospace' }}>
@@ -387,7 +831,6 @@ export default function WorkflowVisualization() {
             </div>
             <div className="text-right">
               <div className="text-xl font-bold">{levels[currentLevel].name}</div>
-              <div className="text-sm text-yellow-400">{levels[currentLevel].description}</div>
             </div>
           </div>
 
@@ -403,6 +846,8 @@ export default function WorkflowVisualization() {
                   setIsClimbingFlag(false);
                   setFlagProgress(0);
                   setHitBlocks(new Set());
+                  setActiveMushrooms([]);
+                  setIsMarioChilling(false);
                 }
               }}
               className="px-6 py-2 bg-gradient-to-b from-red-500 to-red-700 text-white font-bold rounded border-2 border-red-900 hover:from-red-600 hover:to-red-800 transition transform hover:scale-105 active:scale-95"
@@ -464,32 +909,16 @@ export default function WorkflowVisualization() {
         </div>
 
         {/* Mario's thoughts - play by play (conversation bubble) */}
-        <div className="bg-white/90 rounded-xl p-6 border-4 border-gray-800 shadow-2xl mb-6 min-h-32 flex items-center justify-center">
+        <div className="bg-white rounded-xl p-6 border-4 border-gray-800 shadow-2xl mb-6 flex items-center justify-center" style={{ minHeight: '160px', maxHeight: '160px' }}>
           {currentThought && currentStep >= 0 ? (
             <div className="text-center max-w-3xl">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                {prevTool >= 0 && prevTool !== currentTool && (
-                  <>
-                    <img
-                      src={getToolWithLevelLogo(prevTool)?.logo}
-                      alt={getToolWithLevelLogo(prevTool)?.name}
-                      className="w-10 h-10 object-contain"
-                    />
-                    <span className="text-3xl">→</span>
-                    <img
-                      src={getToolWithLevelLogo(currentTool)?.logo}
-                      alt={getToolWithLevelLogo(currentTool)?.name}
-                      className="w-10 h-10 object-contain"
-                    />
-                  </>
-                )}
-                {(prevTool === -1 || prevTool === currentTool) && (
-                  <img
-                    src={getToolWithLevelLogo(currentTool)?.logo}
-                    alt={getToolWithLevelLogo(currentTool)?.name}
-                    className="w-12 h-12 object-contain"
-                  />
-                )}
+              <div className="flex items-center justify-center mb-3">
+                <img
+                  src="/assets/mariolookingatcamera.png"
+                  alt="Mario"
+                  className="w-12 h-12 object-contain"
+                  style={{ imageRendering: 'pixelated' }}
+                />
               </div>
               <p className="text-2xl font-bold" style={{ fontFamily: 'monospace' }}>
                 "{currentThought}"
@@ -497,7 +926,14 @@ export default function WorkflowVisualization() {
             </div>
           ) : (
             <div className="text-center text-gray-400">
-              <div className="text-5xl mb-3">{isComplete ? '🎉' : '🏃'}</div>
+              <div className="flex items-center justify-center mb-3">
+                <img
+                  src="/assets/mariolookingatcamera.png"
+                  alt="Mario"
+                  className="w-12 h-12 object-contain"
+                  style={{ imageRendering: 'pixelated' }}
+                />
+              </div>
               <p className="text-xl font-bold mb-2" style={{ fontFamily: 'monospace' }}>
                 {isComplete
                   ? (currentLevel === 0 ? "Finally done... that was painful 😮‍💨"
@@ -505,7 +941,7 @@ export default function WorkflowVisualization() {
                      : currentLevel === 2 ? "Finished! But that was chaotic 🤪"
                      : currentLevel === 3 ? "Done efficiently! Context is key 👑"
                      : "That was easy! AI did everything 😎")
-                  : "Press PLAY to start the workflow!"}
+                  : "Let's get some shit done!"}
               </p>
               {isComplete && (
                 <p className="text-sm text-gray-500">
@@ -534,13 +970,6 @@ export default function WorkflowVisualization() {
                     transform: 'translateX(-50%)'
                   }}
                 >
-                  {/* Coin popup when hit */}
-                  {isActive && isJumping && (
-                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-3xl animate-bounce">
-                      🪙
-                    </div>
-                  )}
-
                   {/* Brick block or Logo */}
                   <div
                     className="relative"
@@ -589,29 +1018,72 @@ export default function WorkflowVisualization() {
 
           {/* Mario walking and jumping */}
           <div
-            className={isClimbingFlag ? 'absolute z-20' : 'absolute z-20'}
+            className={isClimbingFlag ? 'fixed z-20' : 'absolute z-20'}
             style={{
-              right: isClimbingFlag ? '26px' : 'auto',
+              right: isClimbingFlag ? '104px' : 'auto',
               left: isClimbingFlag ? 'auto' : `${marioXPosition}%`,
-              bottom: isClimbingFlag ? `${80 + (flagProgress * 3)}px` : (isJumping ? '128px' : '64px'),
+              bottom: isClimbingFlag ? `${90 + (flagProgress * 2.5)}px` : (isJumping ? '128px' : '106px'),
               transition: 'left 500ms ease-in-out, right 500ms ease-in-out, bottom 300ms ease-in-out',
               width: '48px',
               height: '48px',
               transform: isClimbingFlag
-                ? `scaleX(1)`
+                ? `scaleX(-1)`
                 : `translateX(-50%) scaleX(${marioFacingRight ? 1 : -1})`,
               filter: 'drop-shadow(2px 2px 0 rgba(0,0,0,0.3))'
             }}
           >
             <img
-              src={isClimbingFlag ? "/assets/mario.png" : (isJumping ? "/assets/mariojumping.png" : "/assets/mario.png")}
+              src={isClimbingFlag ? "/assets/mario.png" : (isJumping ? "/assets/mariojumping.png" : (isMarioChilling ? "/assets/mariochill.png" : "/assets/mario.png"))}
               alt="Mario"
               className="w-full h-full object-contain"
             />
           </div>
+          {/* Mushrooms */}
+          {activeMushrooms.map((mushroom, idx) => {
+            const fromX = blockPositions[mushroom.fromTool];
+            const toX = blockPositions[mushroom.toTool];
+
+            // Calculate position based on direction
+            let currentX, currentY;
+            if (mushroom.returning) {
+              // Going back to AI
+              const returnProgress = mushroom.progress;
+              currentX = toX + (fromX - toX) * (returnProgress / 100);
+              currentY = 132;
+            } else {
+              // Going to target
+              currentX = fromX + (toX - fromX) * (mushroom.progress / 100);
+              currentY = 132;
+            }
+
+            const yOffset = idx * 8; // Stagger vertically for multiple mushrooms
+
+            return (
+              <div
+                key={mushroom.id}
+                className="absolute z-30"
+                style={{
+                  left: `${currentX}%`,
+                  top: `${60 + yOffset}px`, // Position above the tiles
+                  transform: 'translateX(-50%)',
+                  transition: 'left 30ms linear, top 30ms linear',
+                  width: '32px',
+                  height: '32px'
+                }}
+              >
+                <img
+                  src="/assets/mushroom.png"
+                  alt="Mushroom"
+                  className="w-full h-full object-contain"
+                  style={{ imageRendering: 'pixelated' }}
+                />
+              </div>
+            );
+          })}
+
           {/* Ground - two rows of bricks */}
           <div
-            className="absolute bottom-0"
+            className="fixed bottom-0"
             style={{
               left: '50%',
               transform: 'translateX(-50%)',
@@ -649,44 +1121,45 @@ export default function WorkflowVisualization() {
             </div>
           </div>
 
-          {/* Flag pole with ground tile underneath */}
-          <div className="absolute bottom-16 right-5 flex flex-col items-center" style={{ zIndex: 30 }}>
-            {/* Pole and flag */}
-            <div className="relative flex flex-col items-center" style={{ height: '320px' }}>
-              {/* Green dot on top */}
-              <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-green-700 mb-1 z-10" />
-
-              {/* Green pole */}
-              <div
-                className="w-2 flex-1 bg-green-600 border-2 border-green-800"
-                style={{ boxShadow: 'inset -1px 0 0 rgba(0,0,0,0.2)' }}
-              />
-
-              {/* Flag image - starts at top, slides down as Mario climbs */}
-              <img
-                src="/assets/flag.png"
-                alt="Flag"
-                className="absolute left-0"
-                style={{
-                  top: isClimbingFlag ? `${20 + (flagProgress * 2.5)}px` : '20px',
-                  width: '48px',
-                  height: 'auto',
-                  transition: 'top 500ms',
-                  imageRendering: 'pixelated',
-                  zIndex: 5
-                }}
-              />
-            </div>
-
-            {/* Ground tile under pole */}
-            <img
-              src="/assets/groundbrick.png"
-              alt="Ground Tile"
-              className="w-12 h-12 object-contain"
-              style={{ imageRendering: 'pixelated' }}
-            />
-          </div>
         </div>
+      </div>
+
+      {/* Flag pole with ground tile underneath - positioned outside of max-w-5xl container */}
+      <div className="fixed bottom-14 right-32 flex flex-col items-center" style={{ zIndex: 30 }}>
+        {/* Pole and flag */}
+        <div className="relative flex flex-col items-center" style={{ height: '320px' }}>
+          {/* Green dot on top */}
+          <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-green-700 mb-1 z-10" />
+
+          {/* Green pole */}
+          <div
+            className="w-2 flex-1 bg-green-600 border-2 border-green-800"
+            style={{ boxShadow: 'inset -1px 0 0 rgba(0,0,0,0.2)' }}
+          />
+
+          {/* Flag image - starts at top, slides down as Mario climbs */}
+          <img
+            src="/assets/flag.png"
+            alt="Flag"
+            className="absolute left-0"
+            style={{
+              top: isClimbingFlag ? `${20 + (flagProgress * 2.5)}px` : '20px',
+              width: '96px',
+              height: 'auto',
+              transition: 'top 500ms',
+              imageRendering: 'pixelated',
+              zIndex: 5
+            }}
+          />
+        </div>
+
+        {/* Ground tile under pole */}
+        <img
+          src="/assets/groundbrick.png"
+          alt="Ground Tile"
+          className="w-12 h-12 object-contain"
+          style={{ imageRendering: 'pixelated' }}
+        />
       </div>
     </div>
   );
