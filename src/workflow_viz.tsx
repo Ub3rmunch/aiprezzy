@@ -355,276 +355,43 @@ export default function WorkflowVisualization() {
   const currentThought = getCurrentThought();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-400 via-blue-300 to-blue-500 p-4 overflow-hidden relative" style={{ imageRendering: 'pixelated' }}>
+    <div className="h-screen bg-gradient-to-b from-blue-400 via-blue-300 to-blue-500 p-4 overflow-hidden relative" style={{ imageRendering: 'pixelated' }}>
       {/* Background hills */}
-      <div className="absolute bottom-0 left-0 right-0 opacity-30 pointer-events-none">
-        <svg viewBox="0 0 1200 200" className="w-full h-48">
-          <path d="M0,100 Q300,20 600,100 T1200,100 L1200,200 L0,200 Z" fill="#2d5016" />
-          <path d="M0,130 Q400,60 800,130 T1600,130 L1600,200 L0,200 Z" fill="#1a3d0c" />
-        </svg>
+      <div className="absolute bottom-20 left-10 pointer-events-none">
+        <img
+          src="/assets/hills.png"
+          alt="Hills"
+          className="w-48 h-auto"
+          style={{ imageRendering: 'pixelated', opacity: 0.7 }}
+        />
       </div>
-      
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* HUD */}
-        <div className="mb-4 flex justify-between items-center bg-black text-white p-4 rounded-lg border-4 border-white shadow-2xl" style={{ fontFamily: 'monospace' }}>
-          <div className="flex gap-8">
-            <div>
-              <div className="text-sm text-gray-400">WORLD</div>
-              <div className="text-2xl font-bold">{currentLevel + 1}-1</div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-400">SCORE</div>
-              <div className="text-2xl font-bold text-yellow-400">{coins.toString().padStart(6, '0')}</div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-400">TIME</div>
-              <div className="text-2xl font-bold text-green-400">{Math.max(0, 999 - currentStep * 3).toString().padStart(3, '0')}</div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-xl font-bold">{levels[currentLevel].name}</div>
-            <div className="text-sm text-yellow-400">{levels[currentLevel].description}</div>
-          </div>
-        </div>
 
-        {/* Clouds */}
-        <div className="absolute top-44 left-10 opacity-90">
-          <div className="flex">
-            <div className="w-12 h-6 bg-white rounded-full" />
-            <div className="w-16 h-8 bg-white rounded-full -ml-6" />
-            <div className="w-12 h-6 bg-white rounded-full -ml-6" />
-          </div>
-        </div>
-        <div className="absolute top-52 right-20 opacity-90">
-          <div className="flex">
-            <div className="w-14 h-7 bg-white rounded-full" />
-            <div className="w-20 h-10 bg-white rounded-full -ml-7" />
-            <div className="w-14 h-7 bg-white rounded-full -ml-7" />
-          </div>
-        </div>
-
-        {/* Game area */}
-        <div className="relative h-96 mb-6 overflow-visible">
-          {/* Mario brick blocks floating above */}
-          <div className="absolute top-16 left-0 right-0">
-            {tools.map((tool, idx) => {
-              const isActive = currentTool === idx;
-              const wasHit = hitBlocks.has(idx);
-              const toolWithLevelLogo = getToolWithLevelLogo(idx);
-
-              return (
-                <div
-                  key={idx}
-                  className="absolute"
-                  style={{
-                    left: `${blockPositions[idx]}%`,
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  {/* Coin popup when hit */}
-                  {isActive && isJumping && (
-                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-3xl animate-bounce">
-                      🪙
-                    </div>
-                  )}
-
-                  {/* Brick block or Logo */}
-                  <div
-                    className="relative"
-                    style={{
-                      width: '60px',
-                      height: '60px',
-                      backgroundColor: wasHit ? 'transparent' : '#d2691e',
-                      border: wasHit ? 'none' : '3px solid',
-                      borderColor: wasHit ? 'transparent' : '#8b4513',
-                      boxShadow: wasHit
-                        ? 'none'
-                        : '0 4px 0 #654321, inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.2)',
-                      imageRendering: 'pixelated',
-                      transform: isActive && isJumping ? 'translateY(-8px)' : 'translateY(0)',
-                      transition: 'transform 150ms'
-                    }}
-                  >
-                    {/* Brick pattern - only show if not hit */}
-                    {!wasHit && (
-                      <div className="absolute inset-0 grid grid-cols-2 gap-[2px] p-[2px]">
-                        <div className="border border-black/20" />
-                        <div className="border border-black/20" />
-                        <div className="border border-black/20" />
-                        <div className="border border-black/20" />
-                      </div>
-                    )}
-
-                    {/* Question mark if not hit */}
-                    {!wasHit && (
-                      <div className="absolute inset-0 flex items-center justify-center text-yellow-300 text-3xl font-bold" style={{ textShadow: '2px 2px 0 rgba(0,0,0,0.5)' }}>
-                        ?
-                      </div>
-                    )}
-
-                    {/* Show logo when hit - full size, no padding */}
-                    {wasHit && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <img
-                          src={toolWithLevelLogo.logo}
-                          alt={toolWithLevelLogo.name}
-                          className="w-full h-full object-contain"
-                          style={{ filter: 'drop-shadow(2px 2px 3px rgba(0,0,0,0.4))' }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Name label only when active */}
-                  {isActive && (
-                    <div 
-                      className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 text-white px-2 py-1 rounded text-xs font-bold"
-                      style={{ fontFamily: 'monospace' }}
-                    >
-                      {tool.name.toUpperCase()}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Mario walking and jumping */}
-          <div 
-            className="absolute z-20"
-            style={{ 
-              right: isClimbingFlag ? '36px' : 'auto',
-              left: isClimbingFlag ? 'auto' : `${marioXPosition}%`,
-              bottom: isJumping ? '154px' : '64px',
-              transition: 'left 500ms ease-in-out, right 100ms, bottom 300ms ease-in-out',
-              fontSize: '56px',
-              transform: isClimbingFlag 
-                ? `translateY(${-(flagProgress * 3)}px) scaleX(1)`
-                : `translateX(-50%) scaleX(${marioFacingRight ? 1 : -1})`,
-              filter: 'drop-shadow(2px 2px 0 rgba(0,0,0,0.3))'
-            }}
-          >
-            {isClimbingFlag ? (
-              <div style={{ transform: 'scaleX(1)' }}>
-                🧗
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Combined HUD and Controls */}
+        <div className="mb-4 bg-black text-white p-3 rounded-lg border-4 border-white shadow-2xl" style={{ fontFamily: 'monospace' }}>
+          {/* Score Bar */}
+          <div className="flex justify-between items-center mb-3 pb-3 border-b-2 border-gray-700">
+            <div className="flex gap-8">
+              <div>
+                <div className="text-sm text-gray-400">WORLD</div>
+                <div className="text-2xl font-bold">{currentLevel + 1}-1</div>
               </div>
-            ) : (
-              '🏃'
-            )}
-          </div>
-          {/* Ground - full viewport width */}
-          <div 
-            className="absolute bottom-0 h-16 border-t-4 border-orange-900"
-            style={{
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '100vw',
-              background: 'repeating-linear-gradient(90deg, #D2691E 0px, #D2691E 16px, #CD853F 16px, #CD853F 32px)',
-              boxShadow: 'inset 0 4px 0 rgba(0,0,0,0.2)',
-              zIndex: 1
-            }}
-          >
-            {/* Ground detail */}
-            <div className="absolute inset-0 grid grid-cols-[repeat(50,1fr)] gap-0">
-              {[...Array(50)].map((_, i) => (
-                <div key={i} className="border-r border-black/10" />
-              ))}
-            </div>
-          </div>
-
-          {/* Flag pole - starts from ground */}
-          <div className="absolute bottom-16 right-16 flex flex-col items-center" style={{ height: '350px' }}>
-            <div className="relative h-full flex flex-col">
-              {/* Top ball */}
-              <div className="w-5 h-5 bg-yellow-400 rounded-full border-2 border-yellow-600 mb-1 z-10" />
-              
-              {/* Pole */}
-              <div 
-                className="w-3 flex-1 bg-gray-200 border-2 border-gray-400"
-                style={{ boxShadow: 'inset -1px 0 0 rgba(0,0,0,0.2)' }}
-              />
-              
-              {/* Base ball */}
-              <div className="w-5 h-5 bg-yellow-400 rounded-full border-2 border-yellow-600 mt-1" />
-              
-              {/* Flag - starts at top, slides down as Mario climbs */}
-              <div 
-                className={`w-16 h-14 absolute left-0 transition-all duration-500`}
-                style={{
-                  top: isClimbingFlag ? `${10 + (flagProgress * 2.8)}px` : '10px',
-                  backgroundColor: '#ef4444',
-                  clipPath: 'polygon(0 0, 100% 30%, 100% 70%, 0 100%)',
-                  border: '2px solid #991b1b',
-                  zIndex: 5
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="flex justify-center gap-6 mb-4">
-        </div>
-
-        {/* Mario's thoughts - play by play */}
-        <div className="bg-white rounded-xl p-6 border-4 border-gray-800 shadow-2xl mb-4 min-h-32 flex items-center justify-center">
-          {currentThought && currentStep >= 0 ? (
-            <div className="text-center max-w-3xl">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                {prevTool >= 0 && prevTool !== currentTool && (
-                  <>
-                    <img
-                      src={getToolWithLevelLogo(prevTool)?.logo}
-                      alt={getToolWithLevelLogo(prevTool)?.name}
-                      className="w-10 h-10 object-contain"
-                      style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))' }}
-                    />
-                    <span className="text-3xl">→</span>
-                    <img
-                      src={getToolWithLevelLogo(currentTool)?.logo}
-                      alt={getToolWithLevelLogo(currentTool)?.name}
-                      className="w-10 h-10 object-contain"
-                      style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))' }}
-                    />
-                  </>
-                )}
-                {(prevTool === -1 || prevTool === currentTool) && (
-                  <img
-                    src={getToolWithLevelLogo(currentTool)?.logo}
-                    alt={getToolWithLevelLogo(currentTool)?.name}
-                    className="w-12 h-12 object-contain"
-                    style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.2))' }}
-                  />
-                )}
+              <div>
+                <div className="text-sm text-gray-400">SCORE</div>
+                <div className="text-2xl font-bold text-yellow-400">{coins.toString().padStart(6, '0')}</div>
               </div>
-              <p className="text-2xl font-bold" style={{ fontFamily: 'monospace' }}>
-                "{currentThought}"
-              </p>
-              <p className="text-sm text-gray-500 mt-2">- Mario's inner monologue</p>
+              <div>
+                <div className="text-sm text-gray-400">TIME</div>
+                <div className="text-2xl font-bold text-green-400">{Math.max(0, 999 - currentStep * 3).toString().padStart(3, '0')}</div>
+              </div>
             </div>
-          ) : (
-            <div className="text-center text-gray-400">
-              <div className="text-5xl mb-3">{isComplete ? '🎉' : '🏃'}</div>
-              <p className="text-xl font-bold mb-2" style={{ fontFamily: 'monospace' }}>
-                {isComplete 
-                  ? (currentLevel === 0 ? "Finally done... that was painful 😮‍💨" 
-                     : currentLevel === 1 ? "Done! AI helped a bit 🤷"
-                     : currentLevel === 2 ? "Finished! But that was chaotic 🤪"
-                     : currentLevel === 3 ? "Done efficiently! Context is key 👑"
-                     : "That was easy! AI did everything 😎")
-                  : "Press PLAY to start the workflow!"}
-              </p>
-              {isComplete && (
-                <p className="text-sm text-gray-500">
-                  Hit RESTART or try the next level →
-                </p>
-              )}
+            <div className="text-right">
+              <div className="text-xl font-bold">{levels[currentLevel].name}</div>
+              <div className="text-sm text-yellow-400">{levels[currentLevel].description}</div>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Instructions */}
-        <div className="text-center bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white p-4 rounded-lg border-4 border-white shadow-2xl" style={{ fontFamily: 'monospace' }}>
+          {/* Navigation Controls */}
           <div className="flex justify-center items-center gap-6 text-sm">
             <button
               onClick={() => {
@@ -665,6 +432,259 @@ export default function WorkflowVisualization() {
             >
               SLIDES
             </button>
+          </div>
+        </div>
+
+        {/* Clouds - positioned after combined bar */}
+        <div className="relative h-24 mb-4">
+          <div className="absolute top-2 left-10">
+            <img
+              src="/assets/cloud1.png"
+              alt="Cloud"
+              className="w-24 h-auto"
+              style={{ imageRendering: 'pixelated', opacity: 0.9 }}
+            />
+          </div>
+          <div className="absolute top-6 right-20">
+            <img
+              src="/assets/cloud2.png"
+              alt="Cloud"
+              className="w-24 h-auto"
+              style={{ imageRendering: 'pixelated', opacity: 0.9 }}
+            />
+          </div>
+          <div className="absolute top-0 left-1/3">
+            <img
+              src="/assets/cloud1.png"
+              alt="Cloud"
+              className="w-24 h-auto"
+              style={{ imageRendering: 'pixelated', opacity: 0.9 }}
+            />
+          </div>
+        </div>
+
+        {/* Mario's thoughts - play by play (conversation bubble) */}
+        <div className="bg-white/90 rounded-xl p-6 border-4 border-gray-800 shadow-2xl mb-6 min-h-32 flex items-center justify-center">
+          {currentThought && currentStep >= 0 ? (
+            <div className="text-center max-w-3xl">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                {prevTool >= 0 && prevTool !== currentTool && (
+                  <>
+                    <img
+                      src={getToolWithLevelLogo(prevTool)?.logo}
+                      alt={getToolWithLevelLogo(prevTool)?.name}
+                      className="w-10 h-10 object-contain"
+                    />
+                    <span className="text-3xl">→</span>
+                    <img
+                      src={getToolWithLevelLogo(currentTool)?.logo}
+                      alt={getToolWithLevelLogo(currentTool)?.name}
+                      className="w-10 h-10 object-contain"
+                    />
+                  </>
+                )}
+                {(prevTool === -1 || prevTool === currentTool) && (
+                  <img
+                    src={getToolWithLevelLogo(currentTool)?.logo}
+                    alt={getToolWithLevelLogo(currentTool)?.name}
+                    className="w-12 h-12 object-contain"
+                  />
+                )}
+              </div>
+              <p className="text-2xl font-bold" style={{ fontFamily: 'monospace' }}>
+                "{currentThought}"
+              </p>
+            </div>
+          ) : (
+            <div className="text-center text-gray-400">
+              <div className="text-5xl mb-3">{isComplete ? '🎉' : '🏃'}</div>
+              <p className="text-xl font-bold mb-2" style={{ fontFamily: 'monospace' }}>
+                {isComplete
+                  ? (currentLevel === 0 ? "Finally done... that was painful 😮‍💨"
+                     : currentLevel === 1 ? "Done! AI helped a bit 🤷"
+                     : currentLevel === 2 ? "Finished! But that was chaotic 🤪"
+                     : currentLevel === 3 ? "Done efficiently! Context is key 👑"
+                     : "That was easy! AI did everything 😎")
+                  : "Press PLAY to start the workflow!"}
+              </p>
+              {isComplete && (
+                <p className="text-sm text-gray-500">
+                  Hit RESTART or try the next level →
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Game area */}
+        <div className="relative h-96 mb-6 overflow-visible">
+          {/* Mario brick blocks floating above */}
+          <div className="absolute top-32 left-0 right-0">
+            {tools.map((tool, idx) => {
+              const isActive = currentTool === idx;
+              const wasHit = hitBlocks.has(idx);
+              const toolWithLevelLogo = getToolWithLevelLogo(idx);
+
+              return (
+                <div
+                  key={idx}
+                  className="absolute"
+                  style={{
+                    left: `${blockPositions[idx]}%`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  {/* Coin popup when hit */}
+                  {isActive && isJumping && (
+                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-3xl animate-bounce">
+                      🪙
+                    </div>
+                  )}
+
+                  {/* Brick block or Logo */}
+                  <div
+                    className="relative"
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      transform: isActive && isJumping ? 'translateY(-8px)' : 'translateY(0)',
+                      transition: 'transform 150ms'
+                    }}
+                  >
+                    {/* Flying brick image when not hit */}
+                    {!wasHit && (
+                      <img
+                        src="/assets/flyingbrickquestionmark.png"
+                        alt="Question Block"
+                        className="w-full h-full object-contain"
+                        style={{
+                          imageRendering: 'pixelated'
+                        }}
+                      />
+                    )}
+
+                    {/* Show only logo when hit - no brick background */}
+                    {wasHit && (
+                      <img
+                        src={toolWithLevelLogo.logo}
+                        alt={toolWithLevelLogo.name}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                  
+                  {/* Name label only when active */}
+                  {isActive && (
+                    <div 
+                      className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 text-white px-2 py-1 rounded text-xs font-bold"
+                      style={{ fontFamily: 'monospace' }}
+                    >
+                      {tool.name.toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Mario walking and jumping */}
+          <div
+            className={isClimbingFlag ? 'absolute z-20' : 'absolute z-20'}
+            style={{
+              right: isClimbingFlag ? '26px' : 'auto',
+              left: isClimbingFlag ? 'auto' : `${marioXPosition}%`,
+              bottom: isClimbingFlag ? `${80 + (flagProgress * 3)}px` : (isJumping ? '128px' : '64px'),
+              transition: 'left 500ms ease-in-out, right 500ms ease-in-out, bottom 300ms ease-in-out',
+              width: '48px',
+              height: '48px',
+              transform: isClimbingFlag
+                ? `scaleX(1)`
+                : `translateX(-50%) scaleX(${marioFacingRight ? 1 : -1})`,
+              filter: 'drop-shadow(2px 2px 0 rgba(0,0,0,0.3))'
+            }}
+          >
+            <img
+              src={isClimbingFlag ? "/assets/mario.png" : (isJumping ? "/assets/mariojumping.png" : "/assets/mario.png")}
+              alt="Mario"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          {/* Ground - two rows of bricks */}
+          <div
+            className="absolute bottom-0"
+            style={{
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '100vw',
+              height: '64px',
+              zIndex: 1
+            }}
+          >
+            {/* Two rows of ground bricks */}
+            <div className="absolute bottom-0 w-full h-full flex flex-col">
+              {/* Top row */}
+              <div className="flex-1 flex">
+                {[...Array(Math.ceil(window.innerWidth / 32))].map((_, i) => (
+                  <img
+                    key={`top-${i}`}
+                    src="/assets/groundbrick.png"
+                    alt="Ground"
+                    className="w-8 h-8 flex-shrink-0"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                ))}
+              </div>
+              {/* Bottom row */}
+              <div className="flex-1 flex">
+                {[...Array(Math.ceil(window.innerWidth / 32))].map((_, i) => (
+                  <img
+                    key={`bottom-${i}`}
+                    src="/assets/groundbrick.png"
+                    alt="Ground"
+                    className="w-8 h-8 flex-shrink-0"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Flag pole with ground tile underneath */}
+          <div className="absolute bottom-16 right-5 flex flex-col items-center" style={{ zIndex: 30 }}>
+            {/* Pole and flag */}
+            <div className="relative flex flex-col items-center" style={{ height: '320px' }}>
+              {/* Green dot on top */}
+              <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-green-700 mb-1 z-10" />
+
+              {/* Green pole */}
+              <div
+                className="w-2 flex-1 bg-green-600 border-2 border-green-800"
+                style={{ boxShadow: 'inset -1px 0 0 rgba(0,0,0,0.2)' }}
+              />
+
+              {/* Flag image - starts at top, slides down as Mario climbs */}
+              <img
+                src="/assets/flag.png"
+                alt="Flag"
+                className="absolute left-0"
+                style={{
+                  top: isClimbingFlag ? `${20 + (flagProgress * 2.5)}px` : '20px',
+                  width: '48px',
+                  height: 'auto',
+                  transition: 'top 500ms',
+                  imageRendering: 'pixelated',
+                  zIndex: 5
+                }}
+              />
+            </div>
+
+            {/* Ground tile under pole */}
+            <img
+              src="/assets/groundbrick.png"
+              alt="Ground Tile"
+              className="w-12 h-12 object-contain"
+              style={{ imageRendering: 'pixelated' }}
+            />
           </div>
         </div>
       </div>
