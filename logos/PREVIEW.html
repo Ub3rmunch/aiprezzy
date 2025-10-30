@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Preview</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 48px;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        .logo-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .logo-card:hover {
+            transform: translateY(-5px);
+        }
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .logo-name {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        .logo-format {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Service Logos Preview</h1>
+    <div class="grid">
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="jira.svg" alt="Jira">
+            </div>
+            <div class="logo-name">Jira</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="confluence.svg" alt="Confluence">
+            </div>
+            <div class="logo-name">Confluence</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="figma.svg" alt="Figma">
+            </div>
+            <div class="logo-name">Figma</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="xcode.svg" alt="Xcode">
+            </div>
+            <div class="logo-name">Xcode</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="simulator.png" alt="Simulator">
+            </div>
+            <div class="logo-name">iOS Simulator</div>
+            <div class="logo-format">PNG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="tests.svg" alt="Tests">
+            </div>
+            <div class="logo-name">Tests</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="git.svg" alt="Git">
+            </div>
+            <div class="logo-name">Git</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="github.svg" alt="GitHub">
+            </div>
+            <div class="logo-name">GitHub</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="slack.svg" alt="Slack">
+            </div>
+            <div class="logo-name">Slack</div>
+            <div class="logo-format">SVG</div>
+        </div>
+        <div class="logo-card">
+            <div class="logo-container">
+                <img src="anthropic.svg" alt="Claude AI">
+            </div>
+            <div class="logo-name">Claude AI</div>
+            <div class="logo-format">SVG</div>
+        </div>
+    </div>
+</body>
+</html>
