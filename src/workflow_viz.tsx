@@ -128,26 +128,31 @@ const transitionThoughts = {
   }
 };
 
+const getAssetPath = (path: string) => {
+  const base = import.meta.env.BASE_URL || '/';
+  return `${base}${path}`.replace(/\/+/g, '/');
+};
+
 const tools = [
-  { name: 'Jira', emoji: '📋', logo: '/logos/jira.png' },
-  { name: 'Confluence', emoji: '📚', logo: '/logos/confluence.png' },
-  { name: 'Figma', emoji: '🎨', logo: '/logos/figma.png' },
-  { name: 'Xcode', emoji: '💻', logo: '/logos/xcode.png' },
-  { name: 'Simulator', emoji: '📱', logo: '/logos/simulator.png' },
-  { name: 'Tests', emoji: '✅', logo: '/logos/tests.png' },
-  { name: 'Git', emoji: '🔀', logo: '/logos/git.png' },
-  { name: 'GitHub', emoji: '🐙', logo: '/logos/github.png' },
-  { name: 'Slack', emoji: '💬', logo: '/logos/slack.png' },
-  { name: 'AI', emoji: '🤖', logo: '/logos/claude.png' }
+  { name: 'Jira', emoji: '📋', logo: getAssetPath('logos/jira.png') },
+  { name: 'Confluence', emoji: '📚', logo: getAssetPath('logos/confluence.png') },
+  { name: 'Figma', emoji: '🎨', logo: getAssetPath('logos/figma.png') },
+  { name: 'Xcode', emoji: '💻', logo: getAssetPath('logos/xcode.png') },
+  { name: 'Simulator', emoji: '📱', logo: getAssetPath('logos/simulator.png') },
+  { name: 'Tests', emoji: '✅', logo: getAssetPath('logos/tests.png') },
+  { name: 'Git', emoji: '🔀', logo: getAssetPath('logos/git.png') },
+  { name: 'GitHub', emoji: '🐙', logo: getAssetPath('logos/github.png') },
+  { name: 'Slack', emoji: '💬', logo: getAssetPath('logos/slack.png') },
+  { name: 'AI', emoji: '🤖', logo: getAssetPath('logos/claude.png') }
 ];
 
 // AI logos per level: Level 2 = ChatGPT, Level 3 = Copilot, Levels 4-5 = Claude
 const aiLogos = {
-  0: '/logos/claude.png',  // Level 1 - no AI used, but default to claude
-  1: '/logos/chatgpt.png', // Level 2 - Copy/Pasta AI
-  2: '/logos/copilot.png', // Level 3 - AGENTIC LVL 1
-  3: '/logos/claude.png',  // Level 4 - AGENTIC LVL 2
-  4: '/logos/claude.png'   // Level 5 - ENDGAME
+  0: getAssetPath('logos/claude.png'),  // Level 1 - no AI used, but default to claude
+  1: getAssetPath('logos/chatgpt.png'), // Level 2 - Copy/Pasta AI
+  2: getAssetPath('logos/copilot.png'), // Level 3 - AGENTIC LVL 1
+  3: getAssetPath('logos/claude.png'),  // Level 4 - AGENTIC LVL 2
+  4: getAssetPath('logos/claude.png')   // Level 5 - ENDGAME
 };
 
 const levels = [
@@ -266,7 +271,7 @@ export default function WorkflowVisualization() {
   const getToolWithLevelLogo = (toolIndex: number) => {
     const tool = tools[toolIndex];
     if (tool.name === 'AI') {
-      return { ...tool, logo: (aiLogos as Record<number, string>)[currentLevel] || '/logos/claude.png' };
+      return { ...tool, logo: (aiLogos as Record<number, string>)[currentLevel] || getAssetPath('logos/claude.png') };
     }
     return tool;
   };
@@ -671,7 +676,7 @@ export default function WorkflowVisualization() {
           <div className="space-y-4 mb-16">
             <div className="flex items-center justify-center gap-4">
               <img
-                src="/assets/mario.png"
+                src={getAssetPath("assets/mario.png")}
                 alt="Mario"
                 className="w-12 h-12"
                 style={{ imageRendering: 'pixelated' }}
@@ -709,7 +714,7 @@ export default function WorkflowVisualization() {
           {[...Array(Math.ceil(window.innerWidth / 32))].map((_, i) => (
             <img
               key={i}
-              src="/assets/groundbrick.png"
+              src={getAssetPath("assets/groundbrick.png")}
               alt="Ground"
               className="w-8 h-8 flex-shrink-0"
               style={{ imageRendering: 'pixelated' }}
@@ -928,7 +933,7 @@ export default function WorkflowVisualization() {
         <div className="relative h-24 mb-4">
           <div className="absolute top-2 left-10">
             <img
-              src="/assets/cloud1.png"
+              src={getAssetPath("assets/cloud1.png")}
               alt="Cloud"
               className="w-24 h-auto"
               style={{ imageRendering: 'pixelated', opacity: 0.9 }}
@@ -936,7 +941,7 @@ export default function WorkflowVisualization() {
           </div>
           <div className="absolute top-6 right-20">
             <img
-              src="/assets/cloud2.png"
+              src={getAssetPath("assets/cloud2.png")}
               alt="Cloud"
               className="w-24 h-auto"
               style={{ imageRendering: 'pixelated', opacity: 0.9 }}
@@ -944,7 +949,7 @@ export default function WorkflowVisualization() {
           </div>
           <div className="absolute top-0 left-1/3">
             <img
-              src="/assets/cloud1.png"
+              src={getAssetPath("assets/cloud1.png")}
               alt="Cloud"
               className="w-24 h-auto"
               style={{ imageRendering: 'pixelated', opacity: 0.9 }}
@@ -958,7 +963,7 @@ export default function WorkflowVisualization() {
             <div className="text-center max-w-3xl">
               <div className="flex items-center justify-center mb-3">
                 <img
-                  src="/assets/mariolookingatcamera.png"
+                  src={getAssetPath("assets/mariolookingatcamera.png")}
                   alt="Mario"
                   className="w-12 h-12 object-contain"
                   style={{ imageRendering: 'pixelated' }}
@@ -972,7 +977,7 @@ export default function WorkflowVisualization() {
             <div className="text-center text-gray-400">
               <div className="flex items-center justify-center mb-3">
                 <img
-                  src="/assets/mariolookingatcamera.png"
+                  src={getAssetPath("assets/mariolookingatcamera.png")}
                   alt="Mario"
                   className="w-12 h-12 object-contain"
                   style={{ imageRendering: 'pixelated' }}
@@ -1027,7 +1032,7 @@ export default function WorkflowVisualization() {
                     {/* Flying brick image when not hit */}
                     {!wasHit && (
                       <img
-                        src="/assets/flyingbrickquestionmark.png"
+                        src={getAssetPath("assets/flyingbrickquestionmark.png")}
                         alt="Question Block"
                         className="w-full h-full object-contain"
                         style={{
@@ -1077,7 +1082,7 @@ export default function WorkflowVisualization() {
             }}
           >
             <img
-              src={isClimbingFlag ? "/assets/mario.png" : (isJumping ? "/assets/mariojumping.png" : (isMarioChilling ? "/assets/mariochill.png" : "/assets/mario.png"))}
+              src={isClimbingFlag ? getAssetPath("assets/mario.png") : (isJumping ? getAssetPath("assets/mariojumping.png") : (isMarioChilling ? getAssetPath("assets/mariochill.png") : getAssetPath("assets/mario.png")))}
               alt="Mario"
               className="w-full h-full object-contain"
             />
@@ -1114,7 +1119,7 @@ export default function WorkflowVisualization() {
                 }}
               >
                 <img
-                  src="/assets/mushroom.png"
+                  src={getAssetPath("assets/mushroom.png")}
                   alt="Mushroom"
                   className="w-full h-full object-contain"
                   style={{ imageRendering: 'pixelated' }}
@@ -1141,7 +1146,7 @@ export default function WorkflowVisualization() {
                 {[...Array(Math.ceil(window.innerWidth / 32))].map((_, i) => (
                   <img
                     key={`top-${i}`}
-                    src="/assets/groundbrick.png"
+                    src={getAssetPath("assets/groundbrick.png")}
                     alt="Ground"
                     className="w-8 h-8 flex-shrink-0"
                     style={{ imageRendering: 'pixelated' }}
@@ -1153,7 +1158,7 @@ export default function WorkflowVisualization() {
                 {[...Array(Math.ceil(window.innerWidth / 32))].map((_, i) => (
                   <img
                     key={`bottom-${i}`}
-                    src="/assets/groundbrick.png"
+                    src={getAssetPath("assets/groundbrick.png")}
                     alt="Ground"
                     className="w-8 h-8 flex-shrink-0"
                     style={{ imageRendering: 'pixelated' }}
@@ -1181,7 +1186,7 @@ export default function WorkflowVisualization() {
 
           {/* Flag image - starts at top, slides down as Mario climbs */}
           <img
-            src="/assets/flag.png"
+            src={getAssetPath("assets/flag.png")}
             alt="Flag"
             className="absolute left-0"
             style={{
@@ -1197,7 +1202,7 @@ export default function WorkflowVisualization() {
 
         {/* Ground tile under pole */}
         <img
-          src="/assets/groundbrick.png"
+          src={getAssetPath("assets/groundbrick.png")}
           alt="Ground Tile"
           className="w-12 h-12 object-contain"
           style={{ imageRendering: 'pixelated' }}
