@@ -1,5 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Pause } from 'lucide-react';
+
+interface Mushroom {
+  id: number;
+  fromTool: number;
+  toTool: number;
+  progress: number;
+  returning: boolean;
+  cycleCount: number;
+  maxCycles: number;
+  visitedServices?: Set<number>;
+  assignedServices?: number[];
+  currentServiceIndex?: number;
+  totalServices?: number;
+  speed?: number;
+  targetSequence?: number[];
+  currentTargetIndex?: number;
+}
 
 const transitionThoughts = {
   // Starting the workflow
@@ -107,7 +124,7 @@ const transitionThoughts = {
     '9_3': "AI already wrote the code. Just checking... perfect as always.",
     '3_4': "AI handled the coding and testing. My job is easy now.",
     '5_6': "AI passed all tests and committed. What a time to be alive.",
-    '7_8': "AI pushed to GitHub and notified the team. I'm a genius for hiring AI.",
+    '6_8': "AI pushed to GitHub and notified the team. I'm a genius for hiring AI.",
   }
 };
 
@@ -237,8 +254,8 @@ export default function WorkflowVisualization() {
   const [coins, setCoins] = useState(0);
   const [isClimbingFlag, setIsClimbingFlag] = useState(false);
   const [flagProgress, setFlagProgress] = useState(0);
-  const [hitBlocks, setHitBlocks] = useState(new Set());
-  const [activeMushrooms, setActiveMushrooms] = useState([]);
+  const [hitBlocks, setHitBlocks] = useState(new Set<number>());
+  const [activeMushrooms, setActiveMushrooms] = useState<Mushroom[]>([]);
   const [isMarioChilling, setIsMarioChilling] = useState(false);
 
   const currentWorkflow = levels[currentLevel].workflow;
@@ -246,10 +263,10 @@ export default function WorkflowVisualization() {
   const isComplete = currentStep >= currentWorkflow.length - 1 && !isPlaying;
 
   // Get tool with level-specific AI logo
-  const getToolWithLevelLogo = (toolIndex) => {
+  const getToolWithLevelLogo = (toolIndex: number) => {
     const tool = tools[toolIndex];
     if (tool.name === 'AI') {
-      return { ...tool, logo: aiLogos[currentLevel] };
+      return { ...tool, logo: (aiLogos as Record<number, string>)[currentLevel] || '/logos/claude.png' };
     }
     return tool;
   };
@@ -267,7 +284,7 @@ export default function WorkflowVisualization() {
 
           setCurrentStep(nextStep);
           setCoins(coins + 10);
-          if (currentStep >= 0) {
+          if (currentStep >= 0 && currentTool !== null) {
             setHitBlocks(new Set([...hitBlocks, currentTool]));
           }
 
@@ -283,46 +300,52 @@ export default function WorkflowVisualization() {
             // Level 5 (index 4): Spawn 3 mushrooms to simulate parallel tasks - multiple cycles
             const newMushrooms = [];
 
-            // Weighted random selection helper function
-            // For level 5, heavily favor Xcode (3) and Simulator (4)
-            const getWeightedRandomTarget = (availableServices, currentLevel) => {
-              // For level 5 (index 4), use weighted selection
-              if (currentLevel >= 4) {
-                // Create weighted array where Xcode and Simulator appear more frequently
-                const weighted = [];
-                availableServices.forEach(service => {
-                  // Xcode (3) and Simulator (4) get 5x weight, others get 1x weight
-                  const weight = (service === 3 || service === 4) ? 5 : 1;
-                  for (let i = 0; i < weight; i++) {
-                    weighted.push(service);
-                  }
-                });
-                return weighted[Math.floor(Math.random() * weighted.length)];
-              } else {
-                // Other levels use unweighted random selection
-                return availableServices[Math.floor(Math.random() * availableServices.length)];
-              }
-            };
-
             if (currentLevel === 4) {
-              // Level 5: Spawn 3 mushrooms that visit ALL services randomly
+              // Level 5: Spawn 3 mushrooms that will collectively visit ALL services
+              // Each mushroom gets assigned specific services to ensure full coverage
               const allServices = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // Jira, Confluence, Figma, Xcode, Simulator, Tests, Git, GitHub, Slack
+
+              // Distribute services across 3 mushrooms to ensure all are visited
+              const mushroomAssignments = [
+                [0, 3, 6],       // Mushroom 1: Jira, Xcode, Git
+                [1, 4, 7],       // Mushroom 2: Confluence, Simulator, GitHub
+                [2, 5, 8]        // Mushroom 3: Figma, Tests, Slack
+              ];
+
+              // Helper function to shuffle an array
+              const shuffleArray = (array: number[]): number[] => {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+              };
 
               for (let i = 0; i < 3; i++) {
                 const mushroomId = Date.now() + i;
-                // Pick a weighted random initial target (favor Xcode and Simulator)
-                const initialTarget = getWeightedRandomTarget(allServices, currentLevel);
+                // Shuffle the assigned services for random order
+                const assignedServices = shuffleArray(mushroomAssignments[i]);
+                const initialTarget = assignedServices[0];
+
+                // Random speed between 1.5 and 3.5 for varied movement
+                const randomSpeed = 1.5 + Math.random() * 2;
+                // Random initial progress offset to stagger starts (0-40%)
+                const randomStartOffset = Math.random() * 40;
 
                 newMushrooms.push({
                   id: mushroomId,
                   fromTool: 9, // AI
                   toTool: initialTarget,
-                  progress: 0,
+                  progress: randomStartOffset, // Start at random progress for staggered effect
                   returning: false,
                   cycleCount: 0,
                   maxCycles: 1, // Only 1 cycle per target (no repeat visits)
-                  visitedServices: new Set(), // Track visited services
-                  totalServices: allServices.length
+                  visitedServices: new Set<number>(), // Track visited services
+                  assignedServices: assignedServices, // Services this mushroom must visit (in random order)
+                  currentServiceIndex: 0, // Index in assignedServices
+                  totalServices: allServices.length,
+                  speed: randomSpeed // Each mushroom moves at different speed
                 });
               }
             } else if (currentLevel === 3) {
@@ -349,6 +372,7 @@ export default function WorkflowVisualization() {
                   progress: 0,
                   returning: false,
                   cycleCount: 0,
+                  maxCycles: 1,
                   targetSequence: targetSequence,
                   currentTargetIndex: 0
                 });
@@ -402,12 +426,12 @@ export default function WorkflowVisualization() {
   }, [isClimbingFlag, flagProgress]);
 
   // Weighted random selection helper function (for use in effects)
-  const getWeightedRandomTarget = (availableServices, level) => {
+  const getWeightedRandomTarget = (availableServices: number[], level: number): number => {
     // For levels 4 and 5 (indices 3 and 4), use weighted selection
     if (level >= 3) {
       // Create weighted array where Xcode and Simulator appear more frequently
-      const weighted = [];
-      availableServices.forEach(service => {
+      const weighted: number[] = [];
+      availableServices.forEach((service: number) => {
         // Xcode (3) and Simulator (4) get 5x weight, others get 1x weight
         const weight = (service === 3 || service === 4) ? 5 : 1;
         for (let i = 0; i < weight; i++) {
@@ -427,21 +451,36 @@ export default function WorkflowVisualization() {
 
     const timer = setInterval(() => {
       setActiveMushrooms(prevMushrooms => {
-        const updated = [];
-        const toReveal = [];
+        const updated: Mushroom[] = [];
+        const toReveal: number[] = [];
 
         prevMushrooms.forEach(mushroom => {
           let newMushroom = { ...mushroom };
 
           if (mushroom.returning) {
             // Returning to AI
-            newMushroom.progress = mushroom.progress + 2;
+            const speed = mushroom.speed || 2; // Use mushroom's speed or default to 2
+            newMushroom.progress = mushroom.progress + speed;
             if (newMushroom.progress >= 100) {
               // Reached AI
-              if (mushroom.visitedServices !== undefined) {
-                // Level 5: Pick a weighted random unvisited target (favor Xcode and Simulator)
+              if (mushroom.assignedServices !== undefined && mushroom.currentServiceIndex !== undefined) {
+                // Level 5: Move to next assigned service
+                const nextIndex = mushroom.currentServiceIndex + 1;
+
+                if (nextIndex < mushroom.assignedServices.length) {
+                  // Move to next assigned service
+                  newMushroom.currentServiceIndex = nextIndex;
+                  newMushroom.toTool = mushroom.assignedServices[nextIndex];
+                  newMushroom.progress = 0;
+                  newMushroom.returning = false;
+                  newMushroom.cycleCount = 0;
+                  updated.push(newMushroom);
+                }
+                // Otherwise mushroom disappears (visited all assigned services)
+              } else if (mushroom.visitedServices !== undefined) {
+                // Level 5 fallback (old logic): Pick a weighted random unvisited target (favor Xcode and Simulator)
                 const allServices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-                const unvisited = allServices.filter(s => !mushroom.visitedServices.has(s));
+                const unvisited = allServices.filter(s => !mushroom.visitedServices!.has(s));
 
                 if (unvisited.length > 0) {
                   // Pick weighted random unvisited service
@@ -453,7 +492,7 @@ export default function WorkflowVisualization() {
                   updated.push(newMushroom);
                 }
                 // Otherwise mushroom disappears (visited all targets)
-              } else if (mushroom.targetSequence !== undefined) {
+              } else if (mushroom.targetSequence !== undefined && mushroom.currentTargetIndex !== undefined) {
                 // Level 4: Move to next target in sequence
                 const nextIndex = mushroom.currentTargetIndex + 1;
                 if (nextIndex < mushroom.targetSequence.length) {
@@ -480,7 +519,8 @@ export default function WorkflowVisualization() {
             }
           } else {
             // Going to target
-            newMushroom.progress = mushroom.progress + 2;
+            const speed = mushroom.speed || 2; // Use mushroom's speed or default to 2
+            newMushroom.progress = mushroom.progress + speed;
             if (newMushroom.progress >= 100) {
               // Reached target
               toReveal.push(mushroom.toTool);
@@ -520,7 +560,7 @@ export default function WorkflowVisualization() {
   }, [activeMushrooms, currentLevel]);
 
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
       if (showIntro) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -723,9 +763,9 @@ export default function WorkflowVisualization() {
                 </div>
 
                 {/* Subitems if they exist */}
-                {currentSlideData.subitems?.[idx] && (
+                {currentSlideData.subitems && (currentSlideData.subitems as unknown as Record<number, string[]>)[idx] && (
                   <div className="ml-16 mt-3 space-y-3">
-                    {currentSlideData.subitems[idx].map((subitem, subidx) => (
+                    {((currentSlideData.subitems as unknown as Record<number, string[]>)[idx]).map((subitem: string, subidx: number) => (
                       <div
                         key={subidx}
                         className="flex items-start rounded-lg p-4 border-l-4 transition-all duration-300"
@@ -780,30 +820,34 @@ export default function WorkflowVisualization() {
     );
   }
 
-  const marioXPosition = currentStep < 0 ? -10 : blockPositions[currentTool];
-  const marioFacingRight = currentStep <= 0 || (currentStep > 0 && blockPositions[currentTool] >= blockPositions[currentWorkflow[currentStep - 1]]);
+  const marioXPosition = currentStep < 0 || currentTool === null ? -10 : blockPositions[currentTool];
+  const marioFacingRight = currentStep <= 0 || currentTool === null || (currentStep > 0 && blockPositions[currentTool] >= blockPositions[currentWorkflow[currentStep - 1]]);
   const prevTool = currentStep > 0 ? currentWorkflow[currentStep - 1] : -1;
   
   // Get current thought based on transition
   const getCurrentThought = () => {
     if (currentTool === null || isClimbingFlag) return null;
-    
+
     // Create transition key: previousTool_currentTool
     const transitionKey = `${prevTool}_${currentTool}`;
-    
+
     // Check for level-specific transition thought first
-    const levelKey = `level_${currentLevel}`;
-    if (transitionThoughts[levelKey]?.[transitionKey]) {
-      return transitionThoughts[levelKey][transitionKey];
+    const levelKey = `level_${currentLevel}` as keyof typeof transitionThoughts;
+    if (transitionThoughts[levelKey] && typeof transitionThoughts[levelKey] === 'object') {
+      const levelThoughts = transitionThoughts[levelKey] as Record<string, string>;
+      if (levelThoughts[transitionKey]) {
+        return levelThoughts[transitionKey];
+      }
     }
-    
+
     // Then check general transition thought
-    if (transitionThoughts[transitionKey]) {
-      return transitionThoughts[transitionKey];
+    const generalThought = (transitionThoughts as Record<string, string | object>)[transitionKey];
+    if (typeof generalThought === 'string') {
+      return generalThought;
     }
-    
-    // Fallback to tool-specific thought
-    return tools[currentTool]?.thought || "Hmm... what's next? 🤔";
+
+    // Fallback thought
+    return "Hmm... what's next? 🤔";
   };
   
   const currentThought = getCurrentThought();
@@ -1044,16 +1088,14 @@ export default function WorkflowVisualization() {
             const toX = blockPositions[mushroom.toTool];
 
             // Calculate position based on direction
-            let currentX, currentY;
+            let currentX;
             if (mushroom.returning) {
               // Going back to AI
               const returnProgress = mushroom.progress;
               currentX = toX + (fromX - toX) * (returnProgress / 100);
-              currentY = 132;
             } else {
               // Going to target
               currentX = fromX + (toX - fromX) * (mushroom.progress / 100);
-              currentY = 132;
             }
 
             const yOffset = idx * 8; // Stagger vertically for multiple mushrooms
