@@ -245,6 +245,52 @@ const slides = [
         "A Guild Swift style guide"
       ]
     }
+  },
+  {
+    title: "Resources",
+    sections: [
+      {
+        category: "Slack",
+        items: [
+          { text: "#project-revolutionise-engineering", type: "text" },
+          { text: "#llm-gateway-private-beta (get invited via Sailpoint)", type: "text" }
+        ]
+      },
+      {
+        category: "Confluence",
+        items: [
+          { text: "AI Engineering Hub", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3783730421/AI+Engineering+Hub", type: "link" },
+          { text: "State of AI in Engineering", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3729099014/State+of+AI+in+Engineering+May+2025", type: "link" },
+          { text: "Permitted Local MCP Servers", url: "https://transferwise.atlassian.net/wiki/spaces/SENG/pages/3863580534/Permitted+Local+MCP+Servers", type: "link" },
+          { text: "Permitted Remote MCP Servers", url: "https://transferwise.atlassian.net/wiki/spaces/SENG/pages/3858046789/Permitted+Remote+MCP+Servers", type: "link" },
+          { text: "dbt MCP + Snowflake MCP Experiment", url: "https://transferwise.atlassian.net/wiki/spaces/AE/pages/3743443397/Power+up+your+dbt+models+development+with+LLM+-+dbt+MCP+Snowflake+MCP+experiment", type: "link" },
+          { text: "Claude Code", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3811228583/Claude+Code", type: "link" }
+        ]
+      },
+      {
+        category: "Articles",
+        items: [
+          { text: "Context Engineering Guide", url: "https://www.promptingguide.ai/guides/context-engineering-guide", type: "link" },
+          { text: "Agentic AI vs Generative AI", url: "https://www.thomsonreuters.com/en/insights/articles/agentic-ai-vs-generative-ai-the-core-differences", type: "link" }
+        ]
+      },
+      {
+        category: "Books",
+        items: [
+          { text: "Impromptu: Amplifying Our Humanity Through AI", url: "https://www.amazon.com/Impromptu-Amplifying-Our-Humanity-Through/dp/B0BYLSCPPV", type: "link" },
+          { text: "The Pragmatic Programmer", url: "https://www.amazon.eg/-/en/Pragmatic-Programmer-journey-mastery-Anniversary/dp/0135957052", type: "link" }
+        ]
+      },
+      {
+        category: "Videos",
+        items: [
+          { text: "The New Code — Sean Grove, OpenAI", url: "https://www.youtube.com/watch?v=8rABwKRsec4", type: "link" },
+          { text: "Software Engineering with LLMs in 2025", url: "https://www.youtube.com/watch?v=EO3_qN_Ynsk", type: "link" },
+          { text: "Andrej Karpathy: Software Is Changing", url: "https://www.youtube.com/watch?v=Lue8K2jqfKk", type: "link" },
+          { text: "Context Engineering is the New Vibe Coding", url: "https://www.youtube.com/watch?v=Egeuql3Lrzg", type: "link" }
+        ]
+      }
+    ]
   }
 ];
 
@@ -756,37 +802,85 @@ export default function WorkflowVisualization() {
 
           {/* Content with nested structure */}
           <div className="space-y-5" style={{ fontFamily: 'monospace' }}>
-            {currentSlideData.items.map((item, idx) => (
-              <div key={idx} className="group">
-                {/* Main item */}
-                <div className="flex items-start backdrop-blur-sm rounded-xl p-5 border-2 transition-all duration-300" style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  borderColor: 'rgba(159, 232, 112, 0.2)'
-                }}>
-                  <span className="text-4xl mr-5 group-hover:scale-125 transition-transform duration-300" style={{ color: '#9FE870' }}>★</span>
-                  <span className="text-2xl flex-1 leading-relaxed">{item}</span>
-                </div>
-
-                {/* Subitems if they exist */}
-                {currentSlideData.subitems && (currentSlideData.subitems as unknown as Record<number, string[]>)[idx] && (
-                  <div className="ml-16 mt-3 space-y-3">
-                    {((currentSlideData.subitems as unknown as Record<number, string[]>)[idx]).map((subitem: string, subidx: number) => (
-                      <div
-                        key={subidx}
-                        className="flex items-start rounded-lg p-4 border-l-4 transition-all duration-300"
-                        style={{
-                          background: 'linear-gradient(90deg, rgba(255, 192, 145, 0.15) 0%, transparent 100%)',
-                          borderColor: '#FFC091'
-                        }}
-                      >
-                        <span className="text-2xl mr-4" style={{ color: '#FFEB69' }}>▸</span>
-                        <span className="text-xl leading-relaxed" style={{ color: '#E8F5E3' }}>{subitem}</span>
-                      </div>
-                    ))}
+            {(currentSlideData as any).sections ? (
+              // Resources slide with sections
+              <div className="space-y-8">
+                {(currentSlideData as any).sections.map((section: any, sectionIdx: number) => (
+                  <div key={sectionIdx}>
+                    {/* Category header */}
+                    <h2 className="text-3xl font-bold mb-4" style={{
+                      color: '#9FE870',
+                      textShadow: '2px 2px 0 #163300'
+                    }}>
+                      {section.category}
+                    </h2>
+                    {/* Items */}
+                    <div className="space-y-3 ml-6">
+                      {section.items.map((item: any, itemIdx: number) => (
+                        <div
+                          key={itemIdx}
+                          className="flex items-start rounded-lg p-3 border-l-4 transition-all duration-300 hover:translate-x-2"
+                          style={{
+                            background: 'linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%)',
+                            borderColor: '#FFEB69'
+                          }}
+                        >
+                          <span className="text-xl mr-3" style={{ color: '#FFEB69' }}>•</span>
+                          {item.type === 'link' ? (
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-lg leading-relaxed hover:underline"
+                              style={{ color: '#E8F5E3' }}
+                            >
+                              {item.text}
+                            </a>
+                          ) : (
+                            <span className="text-lg leading-relaxed" style={{ color: '#E8F5E3' }}>
+                              {item.text}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            ))}
+            ) : (
+              // Regular slides with items
+              (currentSlideData as any).items.map((item: string, idx: number) => (
+                <div key={idx} className="group">
+                  {/* Main item */}
+                  <div className="flex items-start backdrop-blur-sm rounded-xl p-5 border-2 transition-all duration-300" style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    borderColor: 'rgba(159, 232, 112, 0.2)'
+                  }}>
+                    <span className="text-4xl mr-5 group-hover:scale-125 transition-transform duration-300" style={{ color: '#9FE870' }}>★</span>
+                    <span className="text-2xl flex-1 leading-relaxed">{item}</span>
+                  </div>
+
+                  {/* Subitems if they exist */}
+                  {(currentSlideData as any).subitems && (currentSlideData as any).subitems[idx] && (
+                    <div className="ml-16 mt-3 space-y-3">
+                      {(currentSlideData as any).subitems[idx].map((subitem: string, subidx: number) => (
+                        <div
+                          key={subidx}
+                          className="flex items-start rounded-lg p-4 border-l-4 transition-all duration-300"
+                          style={{
+                            background: 'linear-gradient(90deg, rgba(255, 192, 145, 0.15) 0%, transparent 100%)',
+                            borderColor: '#FFC091'
+                          }}
+                        >
+                          <span className="text-2xl mr-4" style={{ color: '#FFEB69' }}>▸</span>
+                          <span className="text-xl leading-relaxed" style={{ color: '#E8F5E3' }}>{subitem}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
 
           {/* Navigation footer */}
