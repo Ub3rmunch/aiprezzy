@@ -250,33 +250,11 @@ const slides = [
     title: "Resources",
     sections: [
       {
-        category: "Slack",
+        category: "Reads",
         items: [
-          { text: "#project-revolutionise-engineering", type: "text" },
-          { text: "#llm-gateway-private-beta (get invited via Sailpoint)", type: "text" }
-        ]
-      },
-      {
-        category: "Confluence",
-        items: [
-          { text: "AI Engineering Hub", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3783730421/AI+Engineering+Hub", type: "link" },
-          { text: "State of AI in Engineering", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3729099014/State+of+AI+in+Engineering+May+2025", type: "link" },
-          { text: "Permitted Local MCP Servers", url: "https://transferwise.atlassian.net/wiki/spaces/SENG/pages/3863580534/Permitted+Local+MCP+Servers", type: "link" },
-          { text: "Permitted Remote MCP Servers", url: "https://transferwise.atlassian.net/wiki/spaces/SENG/pages/3858046789/Permitted+Remote+MCP+Servers", type: "link" },
-          { text: "dbt MCP + Snowflake MCP Experiment", url: "https://transferwise.atlassian.net/wiki/spaces/AE/pages/3743443397/Power+up+your+dbt+models+development+with+LLM+-+dbt+MCP+Snowflake+MCP+experiment", type: "link" },
-          { text: "Claude Code", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3811228583/Claude+Code", type: "link" }
-        ]
-      },
-      {
-        category: "Articles",
-        items: [
+          { text: "Claude Code Documentation", url: "https://docs.claude.com/en/docs/claude-code/overview", type: "link" },
           { text: "Context Engineering Guide", url: "https://www.promptingguide.ai/guides/context-engineering-guide", type: "link" },
-          { text: "Agentic AI vs Generative AI", url: "https://www.thomsonreuters.com/en/insights/articles/agentic-ai-vs-generative-ai-the-core-differences", type: "link" }
-        ]
-      },
-      {
-        category: "Books",
-        items: [
+          { text: "Agentic AI vs Generative AI", url: "https://www.thomsonreuters.com/en/insights/articles/agentic-ai-vs-generative-ai-the-core-differences", type: "link" },
           { text: "Impromptu: Amplifying Our Humanity Through AI", url: "https://www.amazon.com/Impromptu-Amplifying-Our-Humanity-Through/dp/B0BYLSCPPV", type: "link" },
           { text: "The Pragmatic Programmer", url: "https://www.amazon.eg/-/en/Pragmatic-Programmer-journey-mastery-Anniversary/dp/0135957052", type: "link" }
         ]
@@ -288,6 +266,24 @@ const slides = [
           { text: "Software Engineering with LLMs in 2025", url: "https://www.youtube.com/watch?v=EO3_qN_Ynsk", type: "link" },
           { text: "Andrej Karpathy: Software Is Changing", url: "https://www.youtube.com/watch?v=Lue8K2jqfKk", type: "link" },
           { text: "Context Engineering is the New Vibe Coding", url: "https://www.youtube.com/watch?v=Egeuql3Lrzg", type: "link" }
+        ]
+      },
+      {
+        category: "Slack",
+        items: [
+          { text: "#project-revolutionise-engineering", type: "text" },
+          { text: "#llm-gateway-private-beta (get invited when you request LLM Gateway access on Sailpoint)", type: "text" }
+        ]
+      },
+      {
+        category: "Confluence",
+        items: [
+          { text: "AI Engineering Hub", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3783730421/AI+Engineering+Hub", type: "link" },
+          { text: "State of AI in Engineering", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3729099014/State+of+AI+in+Engineering+May+2025", type: "link" },
+          { text: "Permitted Local MCP Servers", url: "https://transferwise.atlassian.net/wiki/spaces/SENG/pages/3863580534/Permitted+Local+MCP+Servers", type: "link" },
+          { text: "Permitted Remote MCP Servers", url: "https://transferwise.atlassian.net/wiki/spaces/SENG/pages/3858046789/Permitted+Remote+MCP+Servers", type: "link" },
+          { text: "Power up your dbt models development with LLM", url: "https://transferwise.atlassian.net/wiki/spaces/AE/pages/3743443397/Power+up+your+dbt+models+development+with+LLM+-+dbt+MCP+Snowflake+MCP+experiment", type: "link" },
+          { text: "Claude Code", url: "https://transferwise.atlassian.net/wiki/spaces/PLAT/pages/3811228583/Claude+Code", type: "link" }
         ]
       }
     ]
